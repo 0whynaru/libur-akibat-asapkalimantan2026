@@ -1116,63 +1116,75 @@
     }
   }
 
-  function startTorch() {
-    if (!window.isSecureContext) { TORCH_STATUS = 'N/A'; updateFxIndicator(); return; }
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    function startTorch() {
+    console.log('[TORCH] startTorch() called');
+    if (!window.isSecureContext) {
+      console.warn('[TORCH] Butuh HTTPS/localhost');
       TORCH_STATUS = 'N/A'; updateFxIndicator(); return;
     }
-    var constraints = [
-      { video: { facingMode: { ideal: 'environment' } } },
-      { video: { facingMode: 'environment' } },
-      { video: true }
-    ];
-    function tryNext(idx) {
-      if (idx >= constraints.length) { TORCH_STATUS = 'ERROR'; updateFxIndicator(); return; }
-      navigator.mediaDevices.getUserMedia(constraints[idx])
-        .then(function(stream) {
-          TORCH_STREAM = stream;
-          var track = stream.getVideoTracks()[0];
-          if (!track) { tryNext(idx + 1); return; }
-          var caps = track.getCapabilities ? track.getCapabilities() : {};
-          if (!caps.torch) {
-            TORCH_STATUS = 'N/A'; updateFxIndicator();
-            try { track.stop(); } catch(e) {}
-            TORCH_STREAM = null;
-            return;
-          }
-          TORCH_ON = true;
-          try { track.applyConstraints({ advanced: [{ torch: true }] }).catch(function(){}); } catch(e) {}
-          updateFxIndicator();
-          if (TORCH_INTERVAL) clearInterval(TORCH_INTERVAL);
-          TORCH_INTERVAL = setInterval(function() {
-            if (!LOCKED) { stopTorch(); return; }
-            TORCH_ON = !TORCH_ON;
-            try { track.applyConstraints({ advanced: [{ torch: TORCH_ON }] }).catch(function(){}); } catch(e) {}
-            updateFxIndicator();
-          }, TORCH_BLINK_MS);
-        })
-        .catch(function(err) {
-          if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-            TORCH_STATUS = 'DENIED'; updateFxIndicator(); return;
-          }
-          tryNext(idx + 1);
-        });
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      console.warn('[TORCH] getUserMedia tidak didukung');
+      TORCH_STATUS = 'N/A'; updateFxIndicator(); return;
     }
-    tryNext(0);
-  }
 
-  function stopTorch() {
-    if (TORCH_INTERVAL) { clearInterval(TORCH_INTERVAL); TORCH_INTERVAL = null; }
-    if (TORCH_STREAM) {
+    // ========== CARA KODE LAMA YANG BISA NYALA ==========
+    // 1. Constraint SIMPLE (bukan ideal)
+    // 2. GAK cek caps.torch
+    // 3. Langsung applyConstraints tanpa cek
+    // 4. Kedip cepat 300ms
+    console.log('[TORCH] Minta izin kamera...');
+    navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment' }
+    })
+    .then(function(stream) {
+      TORCH_STREAM = stream;
+      var track = stream.getVideoTracks()[0];
+      if (!track) {
+        console.warn('[TORCH] No video track');
+        TORCH_STATUS = 'N/A'; updateFxIndicator();
+        return;
+      }
+
+      console.log('[TORCH] Stream OK, langsung nyalain tanpa cek caps');
+      TORCH_STATUS = 'ON';
+
+      // Langsung nyalain — GAK cek caps.torch
       try {
-        var track = TORCH_STREAM.getVideoTracks()[0];
-        if (track) { try { track.applyConstraints({ advanced: [{ torch: false }] }).catch(function(){}); } catch(e) {} }
-        TORCH_STREAM.getTracks().forEach(function(t) { t.stop(); });
-      } catch(e) {}
-      TORCH_STREAM = null;
-    }
-    TORCH_ON = false;
-    updateFxIndicator();
+        track.applyConstraints({ advanced: [{ torch: true }] })
+          .then(function() { console.log('[TORCH] Torch ON ✓'); })
+          .catch(function(e) {
+            console.warn('[TORCH] applyConstraints gagal:', e.name);
+            // Retry setelah 100ms (beberapa HP butuh waktu init)
+            setTimeout(function() {
+              try {
+                track.applyConstraints({ advanced: [{ torch: true }] }).catch(function(){});
+              } catch(e2) {}
+            }, 100);
+          });
+      } catch(e) { console.warn('[TORCH] Exception:', e); }
+
+      updateFxIndicator();
+
+      // Kedip cepat kayak kode lama (300ms, bukan 1000ms)
+      if (TORCH_INTERVAL) clearInterval(TORCH_INTERVAL);
+      TORCH_INTERVAL = setInterval(function() {
+        if (!LOCKED) { stopTorch(); return; }
+        TORCH_ON = !TORCH_ON;
+        try {
+          track.applyConstraints({ advanced: [{ torch: TORCH_ON }] }).catch(function(){});
+        } catch(e) {}
+        updateFxIndicator();
+      }, 300);
+    })
+    .catch(function(err) {
+      console.warn('[TORCH] getUserMedia gagal:', err.name, err.message);
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        TORCH_STATUS = 'DENIED';
+      } else {
+        TORCH_STATUS = 'ERROR';
+      }
+      updateFxIndicator();
+    });
   }
 
   /* ============ VIBRATE ============ */
